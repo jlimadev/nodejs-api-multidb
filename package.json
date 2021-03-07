@@ -1,0 +1,8 @@
+{
+  "name": "nodejs-api-multidb",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/jlimadev/nodejs-api-multidb.git",
+  "author": "Jonathan Alves de Lima <alvesdelimajonathan@johndeere.com>",
+  "license": "MIT"
+}
