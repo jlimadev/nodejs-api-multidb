@@ -28,9 +28,6 @@ const call = async () => {
 
   // const deleteAll = await context.delete();
   const returnValues = await context.read();
-
-  const d = await context.isConnected();
-  console.log(d);
 };
 
 call();

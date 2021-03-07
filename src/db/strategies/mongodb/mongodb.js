@@ -82,7 +82,6 @@ class MongoDB extends ICrud {
   static async disconnect() {
     try {
       await Mongoose.disconnect();
-      console.log('Disconnected from database');
       return true;
     } catch (error) {
       const errorMessage = 'Error on close connection with MongoDB';
