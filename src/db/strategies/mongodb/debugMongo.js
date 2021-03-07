@@ -13,8 +13,6 @@ const call = async () => {
   // });
 
   // const result = await mongodb.delete();
-
-  console.log(result);
   MongoDB.disconnect();
 };
 
