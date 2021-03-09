@@ -1,5 +1,4 @@
 const BaseRoute = require('.');
-const anyClass = jest.fn;
 describe('BaseRoute', () => {
   it('Should return a class instance of object', () => {
     const result = new BaseRoute();
