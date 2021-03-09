@@ -4,7 +4,7 @@
   "main": "src/app.js",
   "license": "MIT",
   "scripts": {
-    "test": "jest  --config jest.config.js",
+    "test": "jest --config jest.config.js",
     "test:watch": "jest  --config jest.config.js --watch",
     "test:silent": "yarn test -- --silent"
   },
