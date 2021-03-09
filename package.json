@@ -1,7 +1,7 @@
 {
   "name": "nodejs-api-multidb",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/app.js",
   "license": "MIT",
   "scripts": {
     "test": "jest  --config jest.config.js",
@@ -9,6 +9,16 @@
     "test:silent": "yarn test -- --silent"
   },
   "dependencies": {
+    "@hapi/hapi": "^20.1.0",
+    "@hapi/inert": "^6.0.3",
+    "@hapi/vision": "^6.0.1",
+    "bcrypt": "^5.0.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^8.2.0",
+    "hapi-auth-jwt2": "^10.2.0",
+    "hapi-swagger": "^14.1.0",
+    "joi": "^17.4.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.15",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",
@@ -16,6 +26,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.20",
     "eslint": "^7.19.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
