@@ -1,4 +1,4 @@
-const NotImplementedException = require('./NotImplementedException');
+const NotImplementedException = require('.');
 
 describe('NotImplementedException', () => {
   it('Should be instance of Error', async () => {

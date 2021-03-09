@@ -1,4 +1,4 @@
-const isUUID = require('./validateUUID');
+const isUUID = require('.');
 describe('isUUID function', () => {
   it('should export a isUUID function', () => {
     expect(isUUID).toBeInstanceOf(Function);
