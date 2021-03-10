@@ -1,7 +1,7 @@
 const server = require('.');
-// jest.mock('@hapi/hapi');
 
 const makeSut = () => {
+  const errorMessage = 'Any error message';
   const appMocked = {
     start: jest.fn(),
     info: {
@@ -11,14 +11,14 @@ const makeSut = () => {
   const deps = {
     app: appMocked,
   };
-  const sut = server(deps);
-
-  return { sut, deps };
+  const sut = server;
+  return { sut, deps, appMocked, errorMessage };
 };
 
 describe('App test suite', () => {
   it('should call the server', async () => {
-    const { sut } = makeSut();
-    await sut();
+    const { sut, deps, appMocked } = makeSut();
+    const result = await sut(deps)();
+    expect(result).toStrictEqual(appMocked);
   });
 });
