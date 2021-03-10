@@ -16,6 +16,7 @@ module.exports = {
     '!src/**/mongodbCommands.js',
     '!src/**/ContextStrategy.js',
     '!src/**/heroesSchema.js',
+    '!src/utils/tests/*.js',
   ],
   coverageDirectory: './coverage',
   coverageReporters: ['lcov', 'text'],

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "cross-env NODE_ENV=devl jest --config jest.config.js",
     "test:watch": "jest --config jest.config.js --watch",
-    "test:silent": "yarn test -- --silent"
+    "test:silent": "yarn test -- --silent",
+    "start:dev": "cross-env NODE_ENV=devl node src/run.js"
   },
   "dependencies": {
     "@hapi/hapi": "^20.1.0",
