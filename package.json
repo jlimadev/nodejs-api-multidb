@@ -1,11 +1,11 @@
 {
   "name": "nodejs-api-multidb",
   "version": "1.0.0",
-  "main": "src/app.js",
+  "main": "src/index.js",
   "license": "MIT",
   "scripts": {
-    "test": "jest --config jest.config.js",
-    "test:watch": "jest  --config jest.config.js --watch",
+    "test": "cross-env NODE_ENV=devl jest --config jest.config.js",
+    "test:watch": "jest --config jest.config.js --watch",
     "test:silent": "yarn test -- --silent"
   },
   "dependencies": {

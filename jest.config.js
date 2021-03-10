@@ -11,7 +11,7 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.js',
     '!**/jest.config.js',
-    '!src/**/debug*.js',
+    '!src/**/run.js',
     '!src/**/mongodbCommands.js',
     '!src/**/ContextStrategy.js',
     '!src/**/heroesSchema.js',
