@@ -1,17 +1,18 @@
 const server = require('.');
+const createHapiMocks = require('../utils/tests/createHapiMocks');
+const createDefineDatabaseMocks = require('../utils/tests/createDefineDatabaseMocks');
 
 const makeSut = () => {
+  const sut = server;
   const errorMessage = 'Any error message';
-  const appMocked = {
-    start: jest.fn(),
-    info: {
-      port: 'any port',
-    },
-  };
+  const { appMocked } = createHapiMocks();
+  const { defineDatabase } = createDefineDatabaseMocks();
+
   const deps = {
     app: appMocked,
+    defineDatabase: defineDatabase,
   };
-  const sut = server;
+
   return { sut, deps, appMocked, errorMessage };
 };
 
