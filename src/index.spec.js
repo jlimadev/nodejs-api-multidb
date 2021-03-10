@@ -1,11 +1,12 @@
-const { handler } = require('.');
+const { handler, deps } = require('.');
 
-describe('application handler', () => {
-  beforeAll(() => {
-    process.env.NODE_ENV = 'devl';
+describe.only('application handler', () => {
+  it('Should return a promise', () => {
+    expect(handler).toBeInstanceOf(Object);
   });
 
-  it('Should export the handler function', () => {
-    expect(handler).toBeInstanceOf(Function);
+  it('Should return an object with deps', async () => {
+    expect(deps).toBeInstanceOf(Object);
+    expect(deps.app).toBeInstanceOf(Object);
   });
 });
