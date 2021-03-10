@@ -16,21 +16,25 @@ const makeSut = () => {
 };
 
 describe('App test suite', () => {
-  it('should call the server', async () => {
-    const { sut, deps, appMocked } = makeSut();
-    const result = await sut(deps)();
-    expect(result).toStrictEqual(appMocked);
+  describe('Success cases', () => {
+    it('Should call the server successfuly', async () => {
+      const { sut, deps, appMocked } = makeSut();
+      const result = await sut(deps)();
+      expect(result).toStrictEqual(appMocked);
+    });
   });
 
-  it('should throw an error if start app fails', async () => {
-    const { sut, deps, errorMessage } = makeSut();
+  describe('Failure cases', () => {
+    it('should throw an error if start app fails', async () => {
+      const { sut, deps, errorMessage } = makeSut();
 
-    deps.app.start = jest.fn(() => Promise.reject(new Error(errorMessage)));
+      deps.app.start = jest.fn(() => Promise.reject(new Error(errorMessage)));
 
-    const act = async () => {
-      await sut(deps)();
-    };
+      const act = async () => {
+        await sut(deps)();
+      };
 
-    expect(act).rejects.toThrow(errorMessage);
+      expect(act).rejects.toThrow(errorMessage);
+    });
   });
 });
