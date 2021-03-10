@@ -21,4 +21,16 @@ describe('App test suite', () => {
     const result = await sut(deps)();
     expect(result).toStrictEqual(appMocked);
   });
+
+  it('should throw an error if start app fails', async () => {
+    const { sut, deps, errorMessage } = makeSut();
+
+    deps.app.start = jest.fn(() => Promise.reject(new Error(errorMessage)));
+
+    const act = async () => {
+      await sut(deps)();
+    };
+
+    expect(act).rejects.toThrow(errorMessage);
+  });
 });
