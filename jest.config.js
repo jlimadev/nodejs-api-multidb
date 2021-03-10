@@ -11,12 +11,12 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.js',
     '!**/jest.config.js',
-    '!src/**/run.js',
     '!src/**/debug*.js',
     '!src/**/mongodbCommands.js',
     '!src/**/ContextStrategy.js',
     '!src/**/heroesSchema.js',
     '!src/utils/tests/*.js',
+    '!src/server.js',
   ],
   coverageDirectory: './coverage',
   coverageReporters: ['lcov', 'text'],
