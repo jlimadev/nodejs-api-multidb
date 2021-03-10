@@ -6,14 +6,14 @@ const makeSut = () => {
   const sut = server;
   const errorMessage = 'Any error message';
   const { appMocked } = createHapiMocks();
-  const { defineDatabase } = createDefineDatabaseMocks();
+  const { instancesMock, defineDatabase } = createDefineDatabaseMocks();
 
   const deps = {
     app: appMocked,
-    defineDatabase: defineDatabase,
+    defineDatabase,
   };
 
-  return { sut, deps, appMocked, errorMessage };
+  return { sut, deps, appMocked, instancesMock, errorMessage };
 };
 
 describe('App test suite', () => {

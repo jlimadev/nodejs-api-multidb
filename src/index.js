@@ -4,6 +4,7 @@ const Mongo = require('./db/strategies/mongodb/mongodb');
 const MongoHeroesSchema = require('./db/strategies/mongodb/schemas/heroesSchema');
 const Postgres = require('./db/strategies/postgres/postgres');
 const PostgresHeroesSchema = require('./db/strategies/postgres/schemas/HeroesSchema');
+const HeroRoutes = require('./routes/HeroRoutes');
 
 const app = new Hapi.Server({
   port: process.env.PORT,
@@ -12,9 +13,9 @@ const app = new Hapi.Server({
 const defineDatabase = async () => {
   const mongoConnection = Mongo.connect();
   const mongoInstance = new Mongo(mongoConnection, MongoHeroesSchema);
+  const postgresConnection = await Postgres.connect();
   const mongoStrategy = new ContextStrategy(mongoInstance);
 
-  const postgresConnection = await Postgres.connect();
   const postgresModel = await Postgres.defineModel(
     postgresConnection,
     PostgresHeroesSchema,
@@ -22,7 +23,9 @@ const defineDatabase = async () => {
   const postgresInstance = new Postgres(postgresConnection, postgresModel);
   const postgresStrategy = new ContextStrategy(postgresInstance);
 
-  const databases = {
+  const heroRoutesInstance = new HeroRoutes(mongoStrategy);
+
+  const instances = {
     mongo: {
       Mongo,
       mongoStrategy,
@@ -32,9 +35,13 @@ const defineDatabase = async () => {
       postgresConnection,
       postgresStrategy,
     },
+    routes: {
+      HeroRoutes,
+      heroRoutesInstance,
+    },
   };
 
-  return databases;
+  return instances;
 };
 
 const deps = {

@@ -4,7 +4,17 @@ const createDefineDatabaseMocks = () => {
     disconnect: jest.fn(),
   };
 
-  const databases = {
+  const methodsMocked = {
+    constructor: jest.fn(),
+    list: jest.fn(),
+    create: jest.fn(),
+  };
+
+  const routesImplementation = {
+    methods: jest.fn(() => ['constructor', 'list', 'create']),
+  };
+
+  const instances = {
     mongo: {
       Mongo: jest.fn().mockImplementation(() => dbImplementation),
       mongoStrategy: jest.fn(),
@@ -14,11 +24,15 @@ const createDefineDatabaseMocks = () => {
       postgresConnection: jest.fn(),
       postgresStrategy: jest.fn(),
     },
+    routes: {
+      HeroRoutes: routesImplementation,
+      heroRoutesInstance: methodsMocked,
+    },
   };
 
-  const defineDatabase = jest.fn().mockReturnValue(databases);
+  const defineDatabase = jest.fn().mockReturnValue(instances);
 
-  return { defineDatabase };
+  return { instances, defineDatabase };
 };
 
 module.exports = createDefineDatabaseMocks;

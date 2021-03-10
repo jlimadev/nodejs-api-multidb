@@ -4,6 +4,7 @@ const createHapiMocks = () => {
     info: {
       port: 'any port',
     },
+    route: jest.fn(),
   };
 
   return { appMocked };
