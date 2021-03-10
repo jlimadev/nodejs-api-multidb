@@ -1,12 +1,24 @@
-const server = require('./app');
+const server = require('.');
 // jest.mock('@hapi/hapi');
 
-const makeSut = () => {};
+const makeSut = () => {
+  const appMocked = {
+    start: jest.fn(),
+    info: {
+      port: 'any port',
+    },
+  };
+  const deps = {
+    app: appMocked,
+  };
+  const sut = server(deps);
+
+  return { sut, deps };
+};
 
 describe('App test suite', () => {
-  process.env.NODE_ENV = 'devl';
-  it.only('should call the server', async () => {
-    const result = await server();
-    console.log();
+  it('should call the server', async () => {
+    const { sut } = makeSut();
+    await sut();
   });
 });
