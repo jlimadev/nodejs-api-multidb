@@ -8,7 +8,8 @@ const defineHeroRoutes = (dbInstance) => {
     heroRouter.get('/', heroRoutesController.list.bind(heroRoutesController));
     return heroRouter;
   } catch (err) {
-    throw new Error(err);
+    console.log('INSIDE INDEX', err);
+    throw Error(err);
   }
 };
 
