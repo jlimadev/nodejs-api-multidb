@@ -1,21 +1,15 @@
-const HeroRoutesController = require('./HeroRoutesController');
-const ContextStrategy = require('../../db/strategies/context/ContextStrategy');
-const MongoDB = require('../../db/strategies/mongodb/mongodb');
-const mongoHeroesSchema = require('../../db/strategies/mongodb/schemas/heroesSchema');
-
 const { Router } = require('express');
-const heroesRouter = Router();
+const HeroRoutesController = require('./HeroRoutesController');
 
-try {
-  const mongoConnection = MongoDB.connect();
-  const mongoDBInstance = new MongoDB(mongoConnection, mongoHeroesSchema);
-  const mongoStrategy = new ContextStrategy(mongoDBInstance);
+const defineHeroRoutes = (dbInstance) => {
+  const heroRouter = Router();
+  try {
+    const heroRoutesController = new HeroRoutesController(dbInstance);
+    heroRouter.get('/', heroRoutesController.list.bind(heroRoutesController));
+    return heroRouter;
+  } catch (err) {
+    throw new Error(err);
+  }
+};
 
-  const heroRoutesController = new HeroRoutesController(mongoStrategy);
-
-  heroesRouter.get('/', heroRoutesController.list.bind(heroRoutesController));
-} catch (err) {
-  throw new Error(err);
-}
-
-module.exports = heroesRouter;
+module.exports = defineHeroRoutes;
