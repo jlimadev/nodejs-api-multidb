@@ -6,9 +6,15 @@ const defineHeroRoutes = (dbInstance) => {
   try {
     const heroRoutesController = new HeroRoutesController(dbInstance);
     heroRouter.get('/', heroRoutesController.list.bind(heroRoutesController));
+
     heroRouter.post(
       '/',
       heroRoutesController.create.bind(heroRoutesController),
+    );
+
+    heroRouter.patch(
+      '/:id',
+      heroRoutesController.update.bind(heroRoutesController),
     );
     return heroRouter;
   } catch (err) {
