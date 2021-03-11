@@ -1,36 +1,10 @@
-const BaseRoute = require('../BaseRoute');
-const Joi = require('joi');
+const { Router } = require('express');
+const heroesRouter = Router();
 
-const failAction = (req, res, error) => {
-  throw error;
+const listHeroes = (req, res) => {
+  res.json({ message: 'hello world' });
 };
 
-const query = Joi.object({
-  skip: Joi.number().default(0),
-  limit: Joi.number().default(10),
-  name: Joi.string().min(3).max(100),
-});
+heroesRouter.get('/', listHeroes);
 
-class HeroRoutes extends BaseRoute {
-  constructor(db) {
-    super();
-    this.db = db;
-  }
-
-  list() {
-    return {
-      path: '/heroes',
-      method: 'GET',
-      options: {
-        validate: {
-          query,
-          headers,
-          failAction,
-        },
-        handler: {},
-      },
-    };
-  }
-}
-
-module.exports = HeroRoutes;
+module.exports = heroesRouter;
