@@ -30,6 +30,19 @@ class HeroRoutesController {
       throw new Error(error.message);
     }
   }
+
+  async update(request, response) {
+    try {
+      const { body, params } = request;
+      const { id } = params;
+      const patchData = JSON.parse(JSON.stringify(body));
+
+      const dbResponse = await this.db.update(id, patchData);
+      return response.json(dbResponse).status(200);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }
 
 module.exports = HeroRoutesController;

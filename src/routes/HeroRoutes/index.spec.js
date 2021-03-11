@@ -57,4 +57,17 @@ describe('Test hero routes', () => {
       expect(listedHero).toEqual(mockInsertHero);
     });
   });
+
+  describe('UPDATE | PATCH ', () => {
+    it('Should update the hero by id', async () => {
+      const patchObject = { power: 'any updated power' };
+      const expectedResponse = { n: 1, nModified: 1, ok: 1 };
+
+      const response = await request(app)
+        .patch(`/heroes/${testId}`)
+        .send(patchObject);
+
+      expect(response.body).toStrictEqual(expectedResponse);
+    });
+  });
 });
