@@ -6,9 +6,12 @@ const defineHeroRoutes = (dbInstance) => {
   try {
     const heroRoutesController = new HeroRoutesController(dbInstance);
     heroRouter.get('/', heroRoutesController.list.bind(heroRoutesController));
+    heroRouter.post(
+      '/',
+      heroRoutesController.create.bind(heroRoutesController),
+    );
     return heroRouter;
   } catch (err) {
-    console.log('INSIDE INDEX', err);
     throw Error(err);
   }
 };

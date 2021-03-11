@@ -13,6 +13,23 @@ describe('Test hero routes', () => {
     await mongoConnection.close();
   });
 
+  describe('CREATE | POST', () => {
+    it('Should return 200 status if creates successfuly', async () => {
+      const response = await request(app).post('/heroes').send(mockInsertHero);
+      const { status, body } = response;
+
+      testId = body._id;
+
+      const expectedKeys = ['createdAt', 'name', 'power', '_id', '__v'];
+      const resultKeys = Object.keys(body);
+      const createdHero = { name: body.name, power: body.power };
+
+      expect(status).toBe(200);
+      expect(resultKeys).toEqual(expectedKeys);
+      expect(createdHero).toEqual(mockInsertHero);
+    });
+  });
+
   describe('LIST | GET', () => {
     it('Should return 200 status if list successfuly', async () => {
       const response = await request(app).get('/heroes');
