@@ -1,7 +1,8 @@
 const express = require('express');
 const { errors } = require('celebrate');
 const cors = require('cors');
-const defineHeroRoutes = require('./HeroRoutes/defineHeroRoutes');
+
+const heroRoutes = require('./hero-routes');
 const heroRoutesValidations = require('../utils/celebrate-validations/heroRoutesValidations');
 
 // Database strategy
@@ -15,7 +16,7 @@ const mongoDBInstance = new MongoDB(mongoConnection, mongoHeroesSchema);
 const mongoStrategy = new ContextStrategy(mongoDBInstance);
 
 // Hero Routes controller Instances
-const HeroRoutesController = require('./HeroRoutes/HeroRoutesController');
+const HeroRoutesController = require('../controllers/HeroRoutesController');
 const heroRoutesController = new HeroRoutesController(mongoStrategy);
 
 const app = express();
@@ -23,10 +24,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use(
-  '/heroes',
-  defineHeroRoutes(heroRoutesController, heroRoutesValidations),
-);
+app.use('/heroes', heroRoutes(heroRoutesController, heroRoutesValidations));
 
 app.use(errors());
 

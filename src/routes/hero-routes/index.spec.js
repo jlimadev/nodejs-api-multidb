@@ -1,4 +1,4 @@
-const defineHeroRoutes = require('./defineHeroRoutes');
+const heroRoutes = require('.');
 
 const makeSut = () => {
   const mockCallback = jest.fn().mockReturnValue(jest.fn());
@@ -17,27 +17,27 @@ const makeSut = () => {
     celebrateValidateDelete: mockCallback,
   });
 
-  const sut = defineHeroRoutes;
+  const sut = heroRoutes;
 
   return { sut, mockedHeroRoute, mockedValidations };
 };
 
-describe('defineHeroRoutes test suit', () => {
+describe('heroRoutes test suit', () => {
   it('Should create a route', async () => {
-    const { mockedHeroRoute, mockedValidations } = makeSut();
-    const route = defineHeroRoutes(mockedHeroRoute, mockedValidations);
+    const { sut, mockedHeroRoute, mockedValidations } = makeSut();
+    const route = sut(mockedHeroRoute, mockedValidations);
     expect(route).toBeInstanceOf(Function);
   });
 
   it('Should fail if an error happens in heroRoutes instance', () => {
-    const { mockedValidations } = makeSut();
+    const { sut, mockedValidations } = makeSut();
 
     const mockedHeroRoute = jest.fn().mockImplementation(() => {
       throw new Error();
     });
 
     const act = () => {
-      defineHeroRoutes(mockedHeroRoute, mockedValidations);
+      sut(mockedHeroRoute, mockedValidations);
     };
 
     expect(act).toThrow();
@@ -51,7 +51,7 @@ describe('defineHeroRoutes test suit', () => {
     });
 
     const act = () => {
-      defineHeroRoutes(mockedHeroRoute, mockedValidations);
+      sut(mockedHeroRoute, mockedValidations);
     };
 
     expect(act).toThrow();
