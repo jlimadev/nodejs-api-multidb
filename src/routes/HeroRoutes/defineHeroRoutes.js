@@ -34,6 +34,7 @@ const defineHeroRoutes = (heroRoutesController, heroRoutesValidations) => {
       celebrateValidateDelete(),
       heroRoutesController.delete.bind(heroRoutesController),
     );
+
     return heroRouter;
   } catch (err) {
     throw Error(err);
