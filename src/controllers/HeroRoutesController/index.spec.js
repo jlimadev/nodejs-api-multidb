@@ -50,7 +50,7 @@ describe('HeroRoutesController test suit', () => {
     expect(heroRoutesController).toBeInstanceOf(HeroRoutesController);
   });
 
-  it('Should throw an error if database method "create" fails', async () => {
+  it('Should throw an error if database method "read" fails', async () => {
     const {
       Sut,
       mockedDatabase,
@@ -64,6 +64,31 @@ describe('HeroRoutesController test suit', () => {
 
     const heroRoutesController = new Sut(mockedDatabase);
     const response = await heroRoutesController.list(
+      mockedRequest,
+      mockedResponse,
+    );
+
+    expect(response).toStrictEqual(errorResponse);
+    expect(mockedResponse.status).toHaveBeenCalledWith(500);
+    expect(mockedResponse.json).toHaveBeenCalledWith({
+      error: errorMessage.message,
+    });
+  });
+
+  it('Should throw an error if database method "create" fails', async () => {
+    const {
+      Sut,
+      mockedDatabase,
+      mockedRequest,
+      mockedResponse,
+      errorMessage,
+      errorResponse,
+    } = makeSut();
+    const heroRoutesController = new Sut(mockedDatabase);
+
+    mockedDatabase.create = jest.fn().mockRejectedValue(errorMessage);
+
+    const response = await heroRoutesController.create(
       mockedRequest,
       mockedResponse,
     );
