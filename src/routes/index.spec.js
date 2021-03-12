@@ -14,7 +14,7 @@ describe('Test hero routes', () => {
 
   describe('CREATE | POST', () => {
     describe('Success cases', () => {
-      it('Should return 200 status if creates successfuly', async () => {
+      it('Should return [Success] 200 status if creates successfuly', async () => {
         const response = await request(app)
           .post('/heroes')
           .send(mockInsertHero);
