@@ -33,6 +33,14 @@ const celebrateValidatePatch = () => {
   });
 };
 
+const celebrateValidateDelete = () => {
+  return celebrate({
+    [Segments.PARAMS]: Joi.object({
+      id: Joi.string().guid(),
+    }),
+  });
+};
+
 const defineHeroRoutes = (dbInstance) => {
   const heroRouter = Router();
   try {
@@ -58,6 +66,7 @@ const defineHeroRoutes = (dbInstance) => {
 
     heroRouter.delete(
       '/:id?',
+      celebrateValidateDelete(),
       heroRoutesController.delete.bind(heroRoutesController),
     );
     return heroRouter;

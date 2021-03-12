@@ -228,25 +228,43 @@ describe('Test hero routes', () => {
   });
 
   describe('DELETE | DELETE ', () => {
-    it('Should delete one hero by id', async () => {
-      const expectedResponse = { n: 1, ok: 1, deletedCount: 1 };
-      const response = await request(app).delete(`/heroes/${testId}`);
+    describe('Success cases', () => {
+      it('Should delete one hero by id', async () => {
+        const expectedResponse = { n: 1, ok: 1, deletedCount: 1 };
+        const response = await request(app).delete(`/heroes/${testId}`);
 
-      expect(response.body).toStrictEqual(expectedResponse);
+        expect(response.body).toStrictEqual(expectedResponse);
+      });
+
+      it('Should delete all when id is not specified', async () => {
+        const manyHeroes = Array(10).fill(mockInsertHero);
+        const expectedResponse = { n: 10, ok: 1, deletedCount: 10 };
+
+        /* Insert many heroes with map (async) */
+        const promises = manyHeroes.map(async (hero) => {
+          return await request(app).post(`/heroes`).send(hero);
+        });
+        await Promise.all(promises);
+
+        const response = await request(app).delete(`/heroes`);
+        expect(response.body).toStrictEqual(expectedResponse);
+      });
     });
 
-    it('Should delete all when id is not specified', async () => {
-      const manyHeroes = Array(10).fill(mockInsertHero);
-      const expectedResponse = { n: 10, ok: 1, deletedCount: 10 };
+    describe('Failure cases', () => {
+      it('Should return [Bad Request] if try to delete an specif id but it is not an UUID', async () => {
+        const response = await request(app).delete('/heroes/invalidUUID');
 
-      /* Insert many heroes with map (async) */
-      const promises = manyHeroes.map(async (hero) => {
-        return await request(app).post(`/heroes`).send(hero);
+        const { statusCode, error, validation } = response.body;
+
+        const {
+          params: { message },
+        } = validation;
+
+        expect(statusCode).toBe(400);
+        expect(error).toBe('Bad Request');
+        expect(message).toBe('"id" must be a valid GUID');
       });
-      await Promise.all(promises);
-
-      const response = await request(app).delete(`/heroes`);
-      expect(response.body).toStrictEqual(expectedResponse);
     });
   });
 });
