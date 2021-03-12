@@ -57,6 +57,29 @@ describe('Test hero routes', () => {
         expect(listedHero).toEqual(mockInsertHero);
       });
     });
+
+    describe('Failure cases', () => {
+      it('Should fail when get using incorrect name in query parameters', async () => {
+        const LIMIT = 10;
+        const SKIP = 0;
+        const NAME = 'an';
+
+        const response = await request(app)
+          .get('/heroes')
+          .query({ limit: LIMIT, skip: SKIP, name: NAME });
+
+        const { statusCode, error, validation } = response.body;
+        const {
+          query: { message },
+        } = validation;
+
+        expect(statusCode).toBe(400);
+        expect(error).toBe('Bad Request');
+        expect(message).toBe(
+          '"name" length must be at least 3 characters long',
+        );
+      });
+    });
   });
 
   describe('UPDATE | PATCH ', () => {
