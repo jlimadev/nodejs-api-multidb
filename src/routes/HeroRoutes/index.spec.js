@@ -78,5 +78,19 @@ describe('Test hero routes', () => {
 
       expect(response.body).toStrictEqual(expectedResponse);
     });
+
+    it('Should delete all when id is not specified', async () => {
+      const manyHeroes = Array(10).fill(mockInsertHero);
+      const expectedResponse = { n: 10, ok: 1, deletedCount: 10 };
+
+      /* Insert many heroes with map (async) */
+      const promises = manyHeroes.map(async (hero) => {
+        return await request(app).post(`/heroes`).send(hero);
+      });
+      await Promise.all(promises);
+
+      const response = await request(app).delete(`/heroes`);
+      expect(response.body).toStrictEqual(expectedResponse);
+    });
   });
 });

@@ -18,7 +18,7 @@ const defineHeroRoutes = (dbInstance) => {
     );
 
     heroRouter.delete(
-      '/:id',
+      '/:id?',
       heroRoutesController.delete.bind(heroRoutesController),
     );
     return heroRouter;
