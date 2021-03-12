@@ -17,7 +17,7 @@ class HeroRoutesController {
       );
       return response.json(dbResponse).status(200);
     } catch (error) {
-      throw new Error(error.message);
+      return response.json({ error: error.message }).status(400);
     }
   }
 
@@ -27,7 +27,7 @@ class HeroRoutesController {
       const dbResponse = await this.db.create({ name, power });
       return response.json(dbResponse).status(200);
     } catch (error) {
-      throw new Error(error.message);
+      return response.json({ error: error.message }).status(400);
     }
   }
 
@@ -40,7 +40,7 @@ class HeroRoutesController {
       const dbResponse = await this.db.update(id, patchData);
       return response.json(dbResponse).status(200);
     } catch (error) {
-      throw new Error(error.message);
+      return response.json({ error: error.message }).status(400);
     }
   }
 
@@ -50,7 +50,7 @@ class HeroRoutesController {
       const dbResponse = await this.db.delete(id);
       return response.json(dbResponse).status(200);
     } catch (error) {
-      throw new Error(error.message);
+      return response.json({ error: error.message }).status(400);
     }
   }
 }
