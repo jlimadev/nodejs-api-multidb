@@ -50,7 +50,7 @@ describe('HeroRoutesController test suit', () => {
     expect(heroRoutesController).toBeInstanceOf(HeroRoutesController);
   });
 
-  it('Should throw an error if db create fails', async () => {
+  it('Should throw an error if database method "create" fails', async () => {
     const {
       Sut,
       mockedDatabase,
@@ -69,5 +69,9 @@ describe('HeroRoutesController test suit', () => {
     );
 
     expect(response).toStrictEqual(errorResponse);
+    expect(mockedResponse.status).toHaveBeenCalledWith(500);
+    expect(mockedResponse.json).toHaveBeenCalledWith({
+      error: errorMessage.message,
+    });
   });
 });
