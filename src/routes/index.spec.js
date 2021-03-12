@@ -13,19 +13,57 @@ describe('Test hero routes', () => {
   });
 
   describe('CREATE | POST', () => {
-    it('Should return 200 status if creates successfuly', async () => {
-      const response = await request(app).post('/heroes').send(mockInsertHero);
-      const { status, body } = response;
+    describe('Success cases', () => {
+      it('Should return 200 status if creates successfuly', async () => {
+        const response = await request(app)
+          .post('/heroes')
+          .send(mockInsertHero);
+        const { status, body } = response;
 
-      testId = body._id;
+        testId = body._id;
 
-      const expectedKeys = ['createdAt', 'name', 'power', '_id', '__v'];
-      const resultKeys = Object.keys(body);
-      const createdHero = { name: body.name, power: body.power };
+        const expectedKeys = ['createdAt', 'name', 'power', '_id', '__v'];
+        const resultKeys = Object.keys(body);
+        const createdHero = { name: body.name, power: body.power };
 
-      expect(status).toBe(200);
-      expect(resultKeys).toEqual(expectedKeys);
-      expect(createdHero).toEqual(mockInsertHero);
+        expect(status).toBe(200);
+        expect(resultKeys).toEqual(expectedKeys);
+        expect(createdHero).toEqual(mockInsertHero);
+      });
+    });
+
+    describe('Failure cases', () => {
+      it('Should return [Bad Request] when create a new hero without a name', async () => {
+        const createInvalidHero = { power: 'Any power' };
+        const response = await request(app)
+          .post('/heroes')
+          .send(createInvalidHero);
+
+        const { statusCode, error, validation } = response.body;
+        const {
+          body: { message },
+        } = validation;
+
+        expect(statusCode).toBe(400);
+        expect(error).toBe('Bad Request');
+        expect(message).toBe('"name" is required');
+      });
+
+      it('Should return [Bad Request] when create a hero without power', async () => {
+        const createInvalidHero = { name: 'Any hero' };
+        const response = await request(app)
+          .post('/heroes')
+          .send(createInvalidHero);
+
+        const { statusCode, error, validation } = response.body;
+        const {
+          body: { message },
+        } = validation;
+
+        expect(statusCode).toBe(400);
+        expect(error).toBe('Bad Request');
+        expect(message).toBe('"power" is required');
+      });
     });
   });
 
@@ -59,7 +97,7 @@ describe('Test hero routes', () => {
     });
 
     describe('Failure cases', () => {
-      it('Should fail when get using incorrect name in query parameters', async () => {
+      it('Should return [Bad Request] when get using incorrect name in query parameters', async () => {
         const LIMIT = 10;
         const SKIP = 0;
         const NAME = 'an';
@@ -80,7 +118,7 @@ describe('Test hero routes', () => {
         );
       });
 
-      it('Should fail when get using incorrect "limit" in query parameters', async () => {
+      it('Should return [Bad Request] when get using incorrect "limit" in query parameters', async () => {
         const LIMIT = 'limit';
         const SKIP = 0;
         const NAME = 'Any';
@@ -99,7 +137,7 @@ describe('Test hero routes', () => {
         expect(message).toBe('"limit" must be a number');
       });
 
-      it('Should fail when get using incorrect "skip" in query parameters', async () => {
+      it('Should return [Bad Request] when get using incorrect "skip" in query parameters', async () => {
         const LIMIT = 0;
         const SKIP = 'skip';
         const NAME = 'Any';
