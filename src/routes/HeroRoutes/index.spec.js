@@ -58,7 +58,7 @@ describe('Test hero routes', () => {
       });
     });
 
-    describe('Failure cases', () => {
+    describe.only('Failure cases', () => {
       it('Should fail when get using incorrect name in query parameters', async () => {
         const LIMIT = 10;
         const SKIP = 0;
@@ -78,6 +78,44 @@ describe('Test hero routes', () => {
         expect(message).toBe(
           '"name" length must be at least 3 characters long',
         );
+      });
+
+      it('Should fail when get using incorrect "limit" in query parameters', async () => {
+        const LIMIT = 'limit';
+        const SKIP = 0;
+        const NAME = 'Any';
+
+        const response = await request(app)
+          .get('/heroes')
+          .query({ limit: LIMIT, skip: SKIP, name: NAME });
+
+        const { statusCode, error, validation } = response.body;
+        const {
+          query: { message },
+        } = validation;
+
+        expect(statusCode).toBe(400);
+        expect(error).toBe('Bad Request');
+        expect(message).toBe('"limit" must be a number');
+      });
+
+      it('Should fail when get using incorrect "skip" in query parameters', async () => {
+        const LIMIT = 0;
+        const SKIP = 'skip';
+        const NAME = 'Any';
+
+        const response = await request(app)
+          .get('/heroes')
+          .query({ limit: LIMIT, skip: SKIP, name: NAME });
+
+        const { statusCode, error, validation } = response.body;
+        const {
+          query: { message },
+        } = validation;
+
+        expect(statusCode).toBe(400);
+        expect(error).toBe('Bad Request');
+        expect(message).toBe('"skip" must be a number');
       });
     });
   });
