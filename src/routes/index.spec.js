@@ -159,15 +159,73 @@ describe('Test hero routes', () => {
   });
 
   describe('UPDATE | PATCH ', () => {
-    it('Should update the hero by id', async () => {
-      const patchObject = { power: 'any updated power' };
-      const expectedResponse = { n: 1, nModified: 1, ok: 1 };
+    describe('Success cases', () => {
+      it('Should update the hero by id', async () => {
+        const patchObject = { power: 'any updated power' };
+        const expectedResponse = { n: 1, nModified: 1, ok: 1 };
 
-      const response = await request(app)
-        .patch(`/heroes/${testId}`)
-        .send(patchObject);
+        const response = await request(app)
+          .patch(`/heroes/${testId}`)
+          .send(patchObject);
 
-      expect(response.body).toStrictEqual(expectedResponse);
+        expect(response.body).toStrictEqual(expectedResponse);
+      });
+    });
+
+    describe.only('Failure cases', () => {
+      it('Should return [Bad Request] if send an invalid UUID', async () => {
+        const patchObject = { power: 'any updated power' };
+        const response = await request(app)
+          .patch('/heroes/invalidUUID')
+          .send(patchObject);
+
+        const { statusCode, error, validation } = response.body;
+        const {
+          params: { message },
+        } = validation;
+
+        expect(statusCode).toBe(400);
+        expect(error).toBe('Bad Request');
+        expect(message).toBe('"id" must be a valid GUID');
+      });
+
+      it('Should return [Bad Request] when send an invalid power inside the body to patch', async () => {
+        const patchInvalidObject = { power: 'a' };
+        const validUUID = '2a93ef58-95ce-4f19-b0e6-9e2698788a6d';
+        const response = await request(app)
+          .patch(`/heroes/${validUUID}`)
+          .send(patchInvalidObject);
+
+        const { statusCode, error, validation } = response.body;
+        const {
+          body: { message },
+        } = validation;
+
+        expect(statusCode).toBe(400);
+        expect(error).toBe('Bad Request');
+        expect(message).toBe(
+          '"power" length must be at least 3 characters long',
+        );
+      });
+
+      it('Should return [Bad Request] when send an invalid name inside the body to patch', async () => {
+        const patchInvalidObject = { name: 'a'.repeat(101) };
+        const validUUID = '2a93ef58-95ce-4f19-b0e6-9e2698788a6d';
+        const response = await request(app)
+          .patch(`/heroes/${validUUID}`)
+          .send(patchInvalidObject);
+
+        const { statusCode, error, validation } = response.body;
+        const {
+          body: { message },
+        } = validation;
+
+        expect(statusCode).toBe(400);
+        expect(error).toBe('Bad Request');
+        expect(message).toBe(
+          '"name" length must be less than or equal to 100 characters long',
+        );
+      });
     });
   });
 

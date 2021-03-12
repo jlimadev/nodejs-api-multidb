@@ -21,6 +21,18 @@ const celebrateValidatePost = () => {
   });
 };
 
+const celebrateValidatePatch = () => {
+  return celebrate({
+    [Segments.PARAMS]: Joi.object({
+      id: Joi.string().guid().required(),
+    }),
+    [Segments.BODY]: Joi.object({
+      name: Joi.string().min(3).max(100),
+      power: Joi.string().min(3).max(100),
+    }),
+  });
+};
+
 const defineHeroRoutes = (dbInstance) => {
   const heroRouter = Router();
   try {
@@ -40,6 +52,7 @@ const defineHeroRoutes = (dbInstance) => {
 
     heroRouter.patch(
       '/:id',
+      celebrateValidatePatch(),
       heroRoutesController.update.bind(heroRoutesController),
     );
 
