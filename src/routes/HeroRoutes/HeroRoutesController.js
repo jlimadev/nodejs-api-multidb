@@ -43,6 +43,16 @@ class HeroRoutesController {
       throw new Error(error.message);
     }
   }
+
+  async delete(request, response) {
+    try {
+      const id = request.params.id;
+      const dbResponse = await this.db.delete(id);
+      return response.json(dbResponse).status(200);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }
 
 module.exports = HeroRoutesController;

@@ -16,6 +16,11 @@ const defineHeroRoutes = (dbInstance) => {
       '/:id',
       heroRoutesController.update.bind(heroRoutesController),
     );
+
+    heroRouter.delete(
+      '/:id',
+      heroRoutesController.delete.bind(heroRoutesController),
+    );
     return heroRouter;
   } catch (err) {
     throw Error(err);

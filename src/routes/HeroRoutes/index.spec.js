@@ -70,4 +70,13 @@ describe('Test hero routes', () => {
       expect(response.body).toStrictEqual(expectedResponse);
     });
   });
+
+  describe('DELETE | DELETE ', () => {
+    it('Should delete one hero by id', async () => {
+      const expectedResponse = { n: 1, ok: 1, deletedCount: 1 };
+      const response = await request(app).delete(`/heroes/${testId}`);
+
+      expect(response.body).toStrictEqual(expectedResponse);
+    });
+  });
 });
