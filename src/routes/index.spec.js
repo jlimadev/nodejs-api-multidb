@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { app, mongoConnection } = require('../');
+const { app, mongoConnection } = require('./');
 let testId = '';
 
 const mockInsertHero = {
@@ -58,7 +58,7 @@ describe('Test hero routes', () => {
       });
     });
 
-    describe.only('Failure cases', () => {
+    describe('Failure cases', () => {
       it('Should fail when get using incorrect name in query parameters', async () => {
         const LIMIT = 10;
         const SKIP = 0;
