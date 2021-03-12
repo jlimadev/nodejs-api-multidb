@@ -1,4 +1,5 @@
 const express = require('express');
+const { errors } = require('celebrate');
 const cors = require('cors');
 const defineHeroRoutes = require('./HeroRoutes');
 
@@ -15,5 +16,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use('/heroes', defineHeroRoutes(mongoStrategy));
+app.use(errors());
 
 module.exports = { app, mongoConnection };
