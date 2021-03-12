@@ -1,6 +1,6 @@
 const request = require('supertest');
 const { app, mongoConnection } = require('./');
-let testId = '';
+let testId = '2a93ef58-95ce-4f19-b0e6-9e2698788a6d';
 
 const mockInsertHero = {
   name: 'any name',
@@ -172,7 +172,7 @@ describe('Test hero routes', () => {
       });
     });
 
-    describe.only('Failure cases', () => {
+    describe('Failure cases', () => {
       it('Should return [Bad Request] if send an invalid UUID', async () => {
         const patchObject = { power: 'any updated power' };
         const response = await request(app)
@@ -191,9 +191,8 @@ describe('Test hero routes', () => {
 
       it('Should return [Bad Request] when send an invalid power inside the body to patch', async () => {
         const patchInvalidObject = { power: 'a' };
-        const validUUID = '2a93ef58-95ce-4f19-b0e6-9e2698788a6d';
         const response = await request(app)
-          .patch(`/heroes/${validUUID}`)
+          .patch(`/heroes/${testId}`)
           .send(patchInvalidObject);
 
         const { statusCode, error, validation } = response.body;
@@ -210,9 +209,8 @@ describe('Test hero routes', () => {
 
       it('Should return [Bad Request] when send an invalid name inside the body to patch', async () => {
         const patchInvalidObject = { name: 'a'.repeat(101) };
-        const validUUID = '2a93ef58-95ce-4f19-b0e6-9e2698788a6d';
         const response = await request(app)
-          .patch(`/heroes/${validUUID}`)
+          .patch(`/heroes/${testId}`)
           .send(patchInvalidObject);
 
         const { statusCode, error, validation } = response.body;
