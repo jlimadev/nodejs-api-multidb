@@ -1,6 +1,6 @@
 const ICrud = require('../interfaces/ICrud');
 const Sequelize = require('sequelize');
-const isUUID = require('../../../utils/validateUUID');
+const isUUID = require('../../../utils/validate-uuid');
 
 class Postgres extends ICrud {
   constructor(connection, schema) {

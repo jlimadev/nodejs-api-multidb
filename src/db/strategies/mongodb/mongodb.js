@@ -1,6 +1,6 @@
 const ICrud = require('../interfaces/ICrud');
 const Mongoose = require('mongoose');
-const isUUID = require('../../../utils/validateUUID');
+const isUUID = require('../../../utils/validate-uuid');
 
 class MongoDB extends ICrud {
   constructor(connection, schema) {

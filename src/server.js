@@ -1,4 +1,4 @@
-const defineEnvironment = require('./utils/defineEnvironment');
+const defineEnvironment = require('./utils/define-environment');
 const env = process.env.NODE_ENV || 'devl';
 defineEnvironment(env);
 
