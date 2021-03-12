@@ -1,18 +1,15 @@
 const { Router } = require('express');
-const HeroRoutesController = require('./HeroRoutesController');
-const heroRoutesValidations = require('../../utils/celebrate-validations/heroRoutesValidations');
 
-const {
-  celebrateValidateGet,
-  celebrateValidatePost,
-  celebrateValidatePatch,
-  celebrateValidateDelete,
-} = heroRoutesValidations();
-
-const defineHeroRoutes = (dbInstance) => {
-  const heroRouter = Router();
+const defineHeroRoutes = (heroRoutesController, heroRoutesValidations) => {
   try {
-    const heroRoutesController = new HeroRoutesController(dbInstance);
+    const heroRouter = Router();
+
+    const {
+      celebrateValidateGet,
+      celebrateValidatePost,
+      celebrateValidatePatch,
+      celebrateValidateDelete,
+    } = heroRoutesValidations();
 
     heroRouter.get(
       '/',
