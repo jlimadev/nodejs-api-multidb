@@ -17,7 +17,7 @@ class HeroRoutesController {
       );
       return response.json(dbResponse).status(200);
     } catch (error) {
-      return response.json({ error: error.message }).status(400);
+      return response.json({ error: error.message }).status(500);
     }
   }
 
