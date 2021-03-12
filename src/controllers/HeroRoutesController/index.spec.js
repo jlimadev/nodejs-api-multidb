@@ -99,4 +99,54 @@ describe('HeroRoutesController test suit', () => {
       error: errorMessage.message,
     });
   });
+
+  it('Should throw an error if database method "update" fails', async () => {
+    const {
+      Sut,
+      mockedDatabase,
+      mockedRequest,
+      mockedResponse,
+      errorMessage,
+      errorResponse,
+    } = makeSut();
+    const heroRoutesController = new Sut(mockedDatabase);
+
+    mockedDatabase.update = jest.fn().mockRejectedValue(errorMessage);
+
+    const response = await heroRoutesController.update(
+      mockedRequest,
+      mockedResponse,
+    );
+
+    expect(response).toStrictEqual(errorResponse);
+    expect(mockedResponse.status).toHaveBeenCalledWith(500);
+    expect(mockedResponse.json).toHaveBeenCalledWith({
+      error: errorMessage.message,
+    });
+  });
+
+  it('Should throw an error if database method "delete" fails', async () => {
+    const {
+      Sut,
+      mockedDatabase,
+      mockedRequest,
+      mockedResponse,
+      errorMessage,
+      errorResponse,
+    } = makeSut();
+    const heroRoutesController = new Sut(mockedDatabase);
+
+    mockedDatabase.delete = jest.fn().mockRejectedValue(errorMessage);
+
+    const response = await heroRoutesController.delete(
+      mockedRequest,
+      mockedResponse,
+    );
+
+    expect(response).toStrictEqual(errorResponse);
+    expect(mockedResponse.status).toHaveBeenCalledWith(500);
+    expect(mockedResponse.json).toHaveBeenCalledWith({
+      error: errorMessage.message,
+    });
+  });
 });
