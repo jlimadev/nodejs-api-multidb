@@ -23,9 +23,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
 app.use('/heroes', heroRoutes(heroRoutesController, heroRoutesValidations));
-
 app.use(errors());
 
 module.exports = { app, mongoConnection };
