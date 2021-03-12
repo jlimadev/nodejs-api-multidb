@@ -2,11 +2,9 @@
 
 Using Strategy Design Pattern to implement a multi-database project and mocha/chai to test.
 
-The API was made with `@hapi/hapi` and dynamic validation with `Joi`.
+The API was made with `express` and dynamic validation with `celebrate`. To generate the swagger `swagger-ui-express`.
 
-To generate the swagger page i've used the plugins `hapi-swagger`, `@hapi/inert` and `@hapi/vision`.
-
-And last but not least, the JWT token authentication. This authentication was built with two libs: `hapi-auth-jwt2` as plugin and `jsonwebtoken` to generate/validate the token.
+And last but not least, the JWT token authentication. This authentication was built with two libs: `express-jwt` as plugin and `jsonwebtoken` to generate/validate the token.
 
 For this project you can use Postgres or MongoDB, but if you want to add any other database, feel free to do it.
 
