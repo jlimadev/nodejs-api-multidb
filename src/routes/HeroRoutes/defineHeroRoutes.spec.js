@@ -43,7 +43,7 @@ describe('defineHeroRoutes test suit', () => {
     expect(act).toThrow();
   });
 
-  it('Should fail if an error happens in heroRoutes instance', () => {
+  it('Should fail if an error happens in heroRoutes validations function', () => {
     const { mockedHeroRoute } = makeSut();
 
     const mockedValidations = jest.fn(() => {
