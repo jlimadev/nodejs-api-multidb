@@ -27,10 +27,7 @@ const makeSut = () => {
       skip: 0,
       limit: 10,
     },
-    body: {
-      name: 'any name',
-      power: 'any power',
-    },
+    body: bodyResponse,
     params: {
       id: 'anyId',
     },
