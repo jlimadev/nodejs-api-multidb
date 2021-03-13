@@ -5,6 +5,15 @@ const makeSut = () => {
   const errorMessage = { message: 'any error' };
   const errorResponse = { statusCode: 500, error: errorMessage };
 
+  const bodyResponse = { name: 'any name', power: 'any power' };
+  const updateResponse = { n: 1, nModified: 1, ok: 1 };
+  const deleteResponse = { n: 1, ok: 1, deletedCount: 1 };
+
+  const successResponse = {
+    statusCode: 200,
+    body: [bodyResponse],
+  };
+
   const mockedDatabase = {
     read: jest.fn(),
     create: jest.fn(),
@@ -27,7 +36,12 @@ const makeSut = () => {
     },
   };
 
-  const mockedResponse = {
+  const mockedSuccessResponse = {
+    json: jest.fn().mockReturnThis(),
+    status: jest.fn().mockReturnValue(successResponse),
+  };
+
+  const mockedErrorResponse = {
     json: jest.fn().mockReturnThis(),
     status: jest.fn().mockReturnValue(errorResponse),
   };
@@ -36,117 +50,141 @@ const makeSut = () => {
     Sut,
     mockedDatabase,
     mockedRequest,
-    mockedResponse,
+    mockedSuccessResponse,
+    successResponse,
+    mockedErrorResponse,
     errorMessage,
     errorResponse,
   };
 };
 
 describe('HeroRoutesController test suit', () => {
-  it('Should create an instance of HeroRoutesController', async () => {
-    const { Sut, mockedDatabase } = makeSut();
+  describe('Success cases', () => {
+    it('Should create an instance of HeroRoutesController', async () => {
+      const { Sut, mockedDatabase } = makeSut();
 
-    const heroRoutesController = new Sut(mockedDatabase);
-    expect(heroRoutesController).toBeInstanceOf(HeroRoutesController);
-  });
+      const heroRoutesController = new Sut(mockedDatabase);
+      expect(heroRoutesController).toBeInstanceOf(HeroRoutesController);
+    });
 
-  it('Should throw an error if database method "read" fails', async () => {
-    const {
-      Sut,
-      mockedDatabase,
-      mockedRequest,
-      mockedResponse,
-      errorMessage,
-      errorResponse,
-    } = makeSut();
+    it('Should list successfuly', async () => {
+      const {
+        Sut,
+        mockedDatabase,
+        mockedRequest,
+        mockedSuccessResponse,
+        successResponse,
+      } = makeSut();
+      const heroRoutesController = new Sut(mockedDatabase);
 
-    mockedDatabase.read = jest.fn().mockRejectedValue(errorMessage);
+      const response = await heroRoutesController.list(
+        mockedRequest,
+        mockedSuccessResponse,
+      );
 
-    const heroRoutesController = new Sut(mockedDatabase);
-    const response = await heroRoutesController.list(
-      mockedRequest,
-      mockedResponse,
-    );
-
-    expect(response).toStrictEqual(errorResponse);
-    expect(mockedResponse.status).toHaveBeenCalledWith(500);
-    expect(mockedResponse.json).toHaveBeenCalledWith({
-      error: errorMessage.message,
+      expect(response).toStrictEqual(successResponse);
     });
   });
 
-  it('Should throw an error if database method "create" fails', async () => {
-    const {
-      Sut,
-      mockedDatabase,
-      mockedRequest,
-      mockedResponse,
-      errorMessage,
-      errorResponse,
-    } = makeSut();
-    const heroRoutesController = new Sut(mockedDatabase);
+  describe('Failure cases', () => {
+    it('Should throw an error if database method "read" fails', async () => {
+      const {
+        Sut,
+        mockedDatabase,
+        mockedRequest,
+        mockedErrorResponse,
+        errorMessage,
+        errorResponse,
+      } = makeSut();
 
-    mockedDatabase.create = jest.fn().mockRejectedValue(errorMessage);
+      mockedDatabase.read = jest.fn().mockRejectedValue(errorMessage);
 
-    const response = await heroRoutesController.create(
-      mockedRequest,
-      mockedResponse,
-    );
+      const heroRoutesController = new Sut(mockedDatabase);
+      const response = await heroRoutesController.list(
+        mockedRequest,
+        mockedErrorResponse,
+      );
 
-    expect(response).toStrictEqual(errorResponse);
-    expect(mockedResponse.status).toHaveBeenCalledWith(500);
-    expect(mockedResponse.json).toHaveBeenCalledWith({
-      error: errorMessage.message,
+      expect(response).toStrictEqual(errorResponse);
+      expect(mockedErrorResponse.status).toHaveBeenCalledWith(500);
+      expect(mockedErrorResponse.json).toHaveBeenCalledWith({
+        error: errorMessage.message,
+      });
     });
-  });
 
-  it('Should throw an error if database method "update" fails', async () => {
-    const {
-      Sut,
-      mockedDatabase,
-      mockedRequest,
-      mockedResponse,
-      errorMessage,
-      errorResponse,
-    } = makeSut();
-    const heroRoutesController = new Sut(mockedDatabase);
+    it('Should throw an error if database method "create" fails', async () => {
+      const {
+        Sut,
+        mockedDatabase,
+        mockedRequest,
+        mockedErrorResponse,
+        errorMessage,
+        errorResponse,
+      } = makeSut();
+      const heroRoutesController = new Sut(mockedDatabase);
 
-    mockedDatabase.update = jest.fn().mockRejectedValue(errorMessage);
+      mockedDatabase.create = jest.fn().mockRejectedValue(errorMessage);
 
-    const response = await heroRoutesController.update(
-      mockedRequest,
-      mockedResponse,
-    );
+      const response = await heroRoutesController.create(
+        mockedRequest,
+        mockedErrorResponse,
+      );
 
-    expect(response).toStrictEqual(errorResponse);
-    expect(mockedResponse.status).toHaveBeenCalledWith(500);
-    expect(mockedResponse.json).toHaveBeenCalledWith({
-      error: errorMessage.message,
+      expect(response).toStrictEqual(errorResponse);
+      expect(mockedErrorResponse.status).toHaveBeenCalledWith(500);
+      expect(mockedErrorResponse.json).toHaveBeenCalledWith({
+        error: errorMessage.message,
+      });
     });
-  });
 
-  it('Should throw an error if database method "delete" fails', async () => {
-    const {
-      Sut,
-      mockedDatabase,
-      mockedRequest,
-      mockedResponse,
-      errorMessage,
-      errorResponse,
-    } = makeSut();
-    const heroRoutesController = new Sut(mockedDatabase);
+    it('Should throw an error if database method "update" fails', async () => {
+      const {
+        Sut,
+        mockedDatabase,
+        mockedRequest,
+        mockedErrorResponse,
+        errorMessage,
+        errorResponse,
+      } = makeSut();
+      const heroRoutesController = new Sut(mockedDatabase);
 
-    mockedDatabase.delete = jest.fn().mockRejectedValue(errorMessage);
+      mockedDatabase.update = jest.fn().mockRejectedValue(errorMessage);
 
-    const response = await heroRoutesController.delete(
-      mockedRequest,
-      mockedResponse,
-    );
+      const response = await heroRoutesController.update(
+        mockedRequest,
+        mockedErrorResponse,
+      );
 
-    expect(response).toStrictEqual(errorResponse);
-    expect(mockedResponse.status).toHaveBeenCalledWith(500);
-    expect(mockedResponse.json).toHaveBeenCalledWith({
-      error: errorMessage.message,
+      expect(response).toStrictEqual(errorResponse);
+      expect(mockedErrorResponse.status).toHaveBeenCalledWith(500);
+      expect(mockedErrorResponse.json).toHaveBeenCalledWith({
+        error: errorMessage.message,
+      });
+    });
+
+    it('Should throw an error if database method "delete" fails', async () => {
+      const {
+        Sut,
+        mockedDatabase,
+        mockedRequest,
+        mockedErrorResponse,
+        errorMessage,
+        errorResponse,
+      } = makeSut();
+      const heroRoutesController = new Sut(mockedDatabase);
+
+      mockedDatabase.delete = jest.fn().mockRejectedValue(errorMessage);
+
+      const response = await heroRoutesController.delete(
+        mockedRequest,
+        mockedErrorResponse,
+      );
+
+      expect(response).toStrictEqual(errorResponse);
+      expect(mockedErrorResponse.status).toHaveBeenCalledWith(500);
+      expect(mockedErrorResponse.json).toHaveBeenCalledWith({
+        error: errorMessage.message,
+      });
     });
   });
 });
