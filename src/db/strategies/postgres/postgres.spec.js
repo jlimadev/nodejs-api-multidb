@@ -687,31 +687,6 @@ describe('Postgres', () => {
         expect(defineModelMockedFunctions.sync).toHaveBeenCalled();
       });
 
-      it('should throw an error if sync returns any error', async () => {
-        const {
-          Sut,
-          sequelizeMockedFunctions,
-          defineModelMockedFunctions,
-          connection,
-          schema,
-          errorMessage,
-        } = await makeSut();
-
-        defineModelMockedFunctions.sync = jest.fn(() => {
-          throw new Error(errorMessage);
-        });
-
-        const act = async () => {
-          await Sut.defineModel(connection, schema);
-        };
-
-        await expect(act).rejects.toThrow(
-          'Error on define model to postgres/sequelize',
-        );
-        expect(sequelizeMockedFunctions.define).toHaveBeenCalled();
-        expect(defineModelMockedFunctions.sync).toHaveBeenCalled();
-      });
-
       it('should return the model on success', async () => {
         const {
           Sut,
