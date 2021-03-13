@@ -153,6 +153,8 @@ describe('HeroRoutesController test suit', () => {
       );
 
       expect(response).toStrictEqual(successResponse);
+      expect(mockedResponse.json).toHaveBeenCalledWith(successResponse.body);
+      expect(mockedResponse.status).toHaveBeenCalledWith(200);
     });
 
     it('Should delete successfuly', async () => {
