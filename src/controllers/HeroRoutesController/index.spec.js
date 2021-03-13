@@ -96,13 +96,31 @@ describe('HeroRoutesController test suit', () => {
         mockedRequest,
         mockedResponse,
         successResponse,
+      } = makeSut();
+      const heroRoutesController = new Sut(mockedDatabase);
+
+      const response = await heroRoutesController.create(
+        mockedRequest,
+        mockedResponse,
+      );
+
+      expect(response).toStrictEqual(successResponse);
+    });
+
+    it('Should update successfuly', async () => {
+      const {
+        Sut,
+        mockedDatabase,
+        mockedRequest,
+        mockedResponse,
+        successResponse,
         updateResponse,
       } = makeSut();
       const heroRoutesController = new Sut(mockedDatabase);
 
       successResponse.body = updateResponse;
 
-      const response = await heroRoutesController.list(
+      const response = await heroRoutesController.update(
         mockedRequest,
         mockedResponse,
       );
