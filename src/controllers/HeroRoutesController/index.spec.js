@@ -15,10 +15,10 @@ const makeSut = () => {
   };
 
   const mockedDatabase = {
-    read: jest.fn(),
-    create: jest.fn(),
-    update: jest.fn(),
-    delete: jest.fn(),
+    read: jest.fn().mockReturnValue(bodyResponse),
+    create: jest.fn().mockReturnValue(bodyResponse),
+    update: jest.fn().mockReturnValue(updateResponse),
+    delete: jest.fn().mockReturnValue(deleteResponse),
   };
 
   const mockedRequest = {
@@ -88,6 +88,8 @@ describe('HeroRoutesController test suit', () => {
       );
 
       expect(response).toStrictEqual(successResponse);
+      expect(mockedResponse.json).toHaveBeenCalledWith(successResponse.body[0]);
+      expect(mockedResponse.status).toHaveBeenCalledWith(200);
     });
 
     it('Should list all successfuly', async () => {
@@ -108,6 +110,8 @@ describe('HeroRoutesController test suit', () => {
       );
 
       expect(response).toStrictEqual(successResponse);
+      expect(mockedResponse.json).toHaveBeenCalledWith(successResponse.body[0]);
+      expect(mockedResponse.status).toHaveBeenCalledWith(200);
     });
 
     it('Should create successfuly', async () => {
@@ -126,6 +130,8 @@ describe('HeroRoutesController test suit', () => {
       );
 
       expect(response).toStrictEqual(successResponse);
+      expect(mockedResponse.json).toHaveBeenCalledWith(successResponse.body[0]);
+      expect(mockedResponse.status).toHaveBeenCalledWith(200);
     });
 
     it('Should update successfuly', async () => {
