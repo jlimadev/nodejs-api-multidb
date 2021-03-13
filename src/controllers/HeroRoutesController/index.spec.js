@@ -36,7 +36,7 @@ const makeSut = () => {
     },
   };
 
-  const mockedSuccessResponse = {
+  const mockedResponse = {
     json: jest.fn().mockReturnThis(),
     status: jest.fn().mockReturnValue(successResponse),
   };
@@ -50,8 +50,9 @@ const makeSut = () => {
     Sut,
     mockedDatabase,
     mockedRequest,
-    mockedSuccessResponse,
+    mockedResponse,
     successResponse,
+    updateResponse,
     mockedErrorResponse,
     errorMessage,
     errorResponse,
@@ -59,6 +60,9 @@ const makeSut = () => {
 };
 
 describe('HeroRoutesController test suit', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
   describe('Success cases', () => {
     it('Should create an instance of HeroRoutesController', async () => {
       const { Sut, mockedDatabase } = makeSut();
@@ -72,14 +76,35 @@ describe('HeroRoutesController test suit', () => {
         Sut,
         mockedDatabase,
         mockedRequest,
-        mockedSuccessResponse,
+        mockedResponse,
         successResponse,
       } = makeSut();
       const heroRoutesController = new Sut(mockedDatabase);
 
       const response = await heroRoutesController.list(
         mockedRequest,
-        mockedSuccessResponse,
+        mockedResponse,
+      );
+
+      expect(response).toStrictEqual(successResponse);
+    });
+
+    it('Should create successfuly', async () => {
+      const {
+        Sut,
+        mockedDatabase,
+        mockedRequest,
+        mockedResponse,
+        successResponse,
+        updateResponse,
+      } = makeSut();
+      const heroRoutesController = new Sut(mockedDatabase);
+
+      successResponse.body = updateResponse;
+
+      const response = await heroRoutesController.list(
+        mockedRequest,
+        mockedResponse,
       );
 
       expect(response).toStrictEqual(successResponse);
