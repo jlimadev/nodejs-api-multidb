@@ -53,6 +53,7 @@ const makeSut = () => {
     mockedResponse,
     successResponse,
     updateResponse,
+    deleteResponse,
     mockedErrorResponse,
     errorMessage,
     errorResponse,
@@ -80,6 +81,26 @@ describe('HeroRoutesController test suit', () => {
         successResponse,
       } = makeSut();
       const heroRoutesController = new Sut(mockedDatabase);
+
+      const response = await heroRoutesController.list(
+        mockedRequest,
+        mockedResponse,
+      );
+
+      expect(response).toStrictEqual(successResponse);
+    });
+
+    it('Should list all successfuly', async () => {
+      const {
+        Sut,
+        mockedDatabase,
+        mockedRequest,
+        mockedResponse,
+        successResponse,
+      } = makeSut();
+      const heroRoutesController = new Sut(mockedDatabase);
+
+      mockedRequest.query.name = undefined;
 
       const response = await heroRoutesController.list(
         mockedRequest,
@@ -121,6 +142,27 @@ describe('HeroRoutesController test suit', () => {
       successResponse.body = updateResponse;
 
       const response = await heroRoutesController.update(
+        mockedRequest,
+        mockedResponse,
+      );
+
+      expect(response).toStrictEqual(successResponse);
+    });
+
+    it('Should delete successfuly', async () => {
+      const {
+        Sut,
+        mockedDatabase,
+        mockedRequest,
+        mockedResponse,
+        successResponse,
+        deleteResponse,
+      } = makeSut();
+      const heroRoutesController = new Sut(mockedDatabase);
+
+      successResponse.body = deleteResponse;
+
+      const response = await heroRoutesController.delete(
         mockedRequest,
         mockedResponse,
       );
