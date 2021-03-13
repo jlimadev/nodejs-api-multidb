@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { app, mongoConnection } = require('./');
+const { app, heroesMongoConnection, authPostgresConnection } = require('./');
 let testId = '2a93ef58-95ce-4f19-b0e6-9e2698788a6d';
 
 const mockInsertHero = {
@@ -9,7 +9,8 @@ const mockInsertHero = {
 
 describe('Test hero routes', () => {
   afterAll(async () => {
-    await mongoConnection.close();
+    await heroesMongoConnection.close();
+    await authPostgresConnection.close();
   });
 
   describe('CREATE | POST', () => {
