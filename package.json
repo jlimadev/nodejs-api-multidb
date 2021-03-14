@@ -7,9 +7,10 @@
     "test": "cross-env NODE_ENV=devl jest --config jest.config.js",
     "test:watch": "jest --config jest.config.js --watch",
     "test:silent": "yarn test -- --silent",
-    "start:dev": "cross-env NODE_ENV=devl node src/run.js"
+    "start:dev": "cross-env NODE_ENV=devl node src/server.js"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "celebrate": "^13.0.4",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
