@@ -19,8 +19,8 @@ describe('Password Helper test suit', () => {
     });
 
     it('should return false when compare the incorrect password', async () => {
-      const result = await comparePassword('anypassword', generatedHash);
-      expect(result).toBe(true);
+      const result = await comparePassword('anyinvalidpassword', generatedHash);
+      expect(result).toBe(false);
     });
   });
 });
