@@ -5,6 +5,7 @@ const ContextStrategy = require('../db/strategies/context/ContextStrategy');
 const MongoDB = require('../db/strategies/mongodb/mongodb');
 const heroRoutes = require('./hero-routes');
 const heroRoutesValidations = require('../utils/celebrate-validations/heroRoutesValidations');
+const authRoutesValidations = require('../utils/celebrate-validations/authRoutesValidations');
 const authRoutes = require('./auth-routes');
 
 const {
@@ -27,13 +28,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
+app.use('/signin', authRoutes(authRoutesController, authRoutesValidations));
 app.use('/heroes', heroRoutes(heroRoutesController, heroRoutesValidations));
-
-app.use(
-  '/authenticate',
-  authRoutes(authRoutesController, heroRoutesValidations),
-);
 app.use(errors());
 
 module.exports = { app, heroesMongoConnection, authPostgresConnection };
