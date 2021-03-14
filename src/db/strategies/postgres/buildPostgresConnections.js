@@ -2,9 +2,9 @@ const ContextStrategy = require('../context/ContextStrategy');
 const Postgres = require('./postgres');
 const authPostgresSchema = require('./schemas/usersSchema');
 
-module.exports = (async () => {
+module.exports = (() => {
   const authPostgresConnection = Postgres.connect();
-  const authPostgresModel = await Postgres.defineModel(
+  const authPostgresModel = Postgres.defineModel(
     authPostgresConnection,
     authPostgresSchema,
   );
@@ -15,6 +15,6 @@ module.exports = (async () => {
   );
 
   const authPostgresStrategy = new ContextStrategy(authPostgresInstance);
-  await authPostgresConnection.close();
+  // authPostgresConnection.close();
   return { authPostgresConnection, authPostgresStrategy };
 })();

@@ -1,9 +1,9 @@
 class AuthRoutesController {
-  constructor(secret, db, passwordHelper, JWTClient) {
-    this.secret = secret;
-    this.db = db;
-    this.passwordHelper = passwordHelper;
-    this.JWTClient = JWTClient;
+  constructor(deps) {
+    this.secret = deps.secret;
+    this.db = deps.db;
+    this.passwordHelper = deps.passwordHelper;
+    this.jwtSign = deps.jwtSign;
   }
 
   async signIn(request, response) {
@@ -23,10 +23,10 @@ class AuthRoutesController {
         error: 'Unauthorized',
         message: 'Invalid username or password',
       };
-      return response.json(error).code(error.statusCode);
+      return response.json(error).status(error.statusCode);
     }
 
-    const token = this.JWTClient.sign(
+    const token = this.jwtSign(
       {
         username,
         id: user.id,
@@ -34,10 +34,14 @@ class AuthRoutesController {
       this.secret,
     );
 
-    return { token };
+    const auth = { auth: true, token };
+    return response.json(auth).status(200);
   }
+  async signOut(request, response) {
+    response.json({ auth: false, token: null }).status(200);
+  }
+
   async signUp() {}
-  async signOut() {}
 }
 
 module.exports = AuthRoutesController;
