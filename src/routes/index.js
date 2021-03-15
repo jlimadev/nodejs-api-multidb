@@ -8,22 +8,23 @@ const heroRoutesValidations = require('../utils/celebrate-validations/heroRoutes
 const authRoutesValidations = require('../utils/celebrate-validations/authRoutesValidations');
 const authRoutes = require('./auth-routes');
 
-const {
-  authPostgresConnection,
-  authPostgresStrategy,
-} = require('../db/strategies/postgres/buildPostgresConnections');
+const secret = process.env.JWT_SECRET;
 
 const {
-  heroesMongoConnection,
+  mongoConnection,
   heroesMongoStrategy,
+  authMongoStrategy,
 } = require('../db/strategies/mongodb/buildMongoConnections');
 
-const secret = process.env.JWT_SECRET;
+// const {
+//   authPostgresConnection,
+//   authPostgresStrategy,
+// } = require('../db/strategies/postgres/buildPostgresConnections');
 
 const AuthRoutesController = require('../controllers/AuthRoutesController/');
 const authRoutesController = new AuthRoutesController({
   secret: secret,
-  db: authPostgresStrategy,
+  db: authMongoStrategy,
   passwordHelper: passwordHelper,
   jwtSign: sign,
 });
@@ -39,4 +40,4 @@ app.use('/auth', authRoutes(authRoutesController, authRoutesValidations));
 app.use('/heroes', heroRoutes(heroRoutesController, heroRoutesValidations));
 app.use(errors());
 
-module.exports = { app, heroesMongoConnection, authPostgresConnection };
+module.exports = { app, mongoConnection };
