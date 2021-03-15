@@ -21,8 +21,7 @@ class MongoDB extends ICrud {
     try {
       return await this._schema.create(item);
     } catch (error) {
-      const errorMessage = 'Error creating data on mongoDB';
-      throw Error(errorMessage);
+      throw Error(error.message);
     }
   }
 
@@ -30,8 +29,7 @@ class MongoDB extends ICrud {
     try {
       return await this._schema.find(item).skip(skip).limit(limit);
     } catch (error) {
-      const errorMessage = 'Error getting data from mongoDB';
-      throw Error(errorMessage);
+      throw Error(error.message);
     }
   }
 
@@ -55,8 +53,7 @@ class MongoDB extends ICrud {
 
       return await this._schema.updateOne(query, updateValue, options);
     } catch (error) {
-      const errorMessage = 'Error updating data on mongoDB';
-      throw Error(errorMessage);
+      throw Error(error.message);
     }
   }
 
@@ -66,8 +63,7 @@ class MongoDB extends ICrud {
         ? await this._schema.deleteOne({ _id: id })
         : await this._schema.deleteMany({});
     } catch (error) {
-      const errorMessage = 'Error deleting data on mongoDB';
-      throw Error(errorMessage);
+      throw Error(error.message);
     }
   }
 
@@ -87,8 +83,7 @@ class MongoDB extends ICrud {
 
       return connection;
     } catch (error) {
-      const errorMessage = 'Error on connect with MongoDB';
-      throw Error(errorMessage);
+      throw Error(error.message);
     }
   }
 
@@ -97,8 +92,7 @@ class MongoDB extends ICrud {
       await Mongoose.disconnect();
       return true;
     } catch (error) {
-      const errorMessage = 'Error on close connection with MongoDB';
-      throw Error(errorMessage);
+      throw Error(error.message);
     }
   }
 }

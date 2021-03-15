@@ -205,7 +205,7 @@ describe('MongoDB', () => {
             await mongo.create(mockInput);
           };
 
-          await expect(act).rejects.toThrow('Error creating data on mongoDB');
+          await expect(act).rejects.toThrow(errorMessage);
           expect(mockedModelsFn.create).toHaveBeenCalled();
         });
       });
@@ -237,6 +237,7 @@ describe('MongoDB', () => {
           expect(mockFind.limit).toHaveBeenCalledWith(10);
         });
       });
+
       describe('Failure cases', () => {
         it('Should return an error if read fails/throw', async () => {
           const {
@@ -260,7 +261,7 @@ describe('MongoDB', () => {
             await mongo.read(searchItem);
           };
 
-          await expect(act).rejects.toThrow('Error getting data from mongoDB');
+          await expect(act).rejects.toThrow(errorMessage);
           expect(mockedModelsFn.find).toHaveBeenCalled();
           expect(mockFind.skip).toHaveBeenCalledWith(0);
           expect(mockFind.limit).toHaveBeenCalledWith(10);
@@ -421,7 +422,7 @@ describe('MongoDB', () => {
             await mongo.update(mockUUID, mockUpdate);
           };
 
-          await expect(act).rejects.toThrow('Error updating data on mongoDB');
+          await expect(act).rejects.toThrow(errorMessage);
           expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
             { _id: mockUUID },
             { $set: mockUpdate },
@@ -498,7 +499,7 @@ describe('MongoDB', () => {
             await mongo.delete(mockUUID);
           };
 
-          await expect(act).rejects.toThrow('Error deleting data on mongoDB');
+          await expect(act).rejects.toThrow(errorMessage);
           expect(mockedModelsFn.deleteOne).toHaveBeenCalledWith({
             _id: mockUUID,
           });
@@ -523,7 +524,7 @@ describe('MongoDB', () => {
             await mongo.delete();
           };
 
-          await expect(act).rejects.toThrow('Error deleting data on mongoDB');
+          await expect(act).rejects.toThrow(errorMessage);
           expect(mockedModelsFn.deleteMany).toHaveBeenCalledWith({});
         });
       });
@@ -542,7 +543,7 @@ describe('MongoDB', () => {
           await Sut.disconnect();
         };
 
-        expect(act()).rejects.toThrow('Error on close connection with MongoDB');
+        expect(act()).rejects.toThrow(errorMessage);
         expect(Mongoose.disconnect).toHaveBeenCalled();
       });
 
@@ -568,7 +569,7 @@ describe('MongoDB', () => {
           Sut.connect();
         };
 
-        expect(act).toThrow('Error on connect with MongoDB');
+        expect(act).toThrow(errorMessage);
         expect(Mongoose.connect).toHaveBeenCalled();
       });
 
