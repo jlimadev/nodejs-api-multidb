@@ -57,6 +57,8 @@ const makeSut = () => {
   const mockUpdate = { name: 'any other name', power: 'any other power' };
   const mockReturnValue = { _id: mockUUID, ...mockInput };
 
+  const mockGenerateUuid = jest.fn().mockReturnValue(mockUUID);
+
   return {
     Sut,
     connection,
@@ -69,21 +71,22 @@ const makeSut = () => {
     mockInput,
     mockUpdate,
     mockReturnValue,
+    mockGenerateUuid,
   };
 };
 
 describe('MongoDB', () => {
-  describe('MongoDB exports and instaces', () => {
+  describe('MongoDB exports and instances', () => {
     it('Should be instance of Object', () => {
-      const { Sut, connection, schema } = makeSut();
-      const mongodb = new Sut(connection, schema);
+      const { Sut, connection, schema, mockGenerateUuid } = makeSut();
+      const mongodb = new Sut(connection, schema, mockGenerateUuid);
 
       expect(mongodb).toBeInstanceOf(Object);
     });
 
     it('Should export the functions', () => {
-      const { Sut, connection, schema } = makeSut();
-      const mongodb = new Sut(connection, schema);
+      const { Sut, connection, schema, mockGenerateUuid } = makeSut();
+      const mongodb = new Sut(connection, schema, mockGenerateUuid);
 
       expect(mongodb.create).toBeInstanceOf(Function);
       expect(mongodb.read).toBeInstanceOf(Function);
@@ -97,330 +100,432 @@ describe('MongoDB', () => {
 
   describe('MongoDB Constructor', () => {
     it('Should throw an error if connection is not informed', () => {
-      const { Sut, schema } = makeSut();
+      const { Sut, schema, mockGenerateUuid } = makeSut();
 
       const act = () => {
-        new Sut(undefined, schema);
+        new Sut(undefined, schema, mockGenerateUuid);
       };
 
       expect(act).toThrow('You must inject the dependecies');
     });
 
     it('Should throw an error if schema is not informed', () => {
-      const { Sut, connection } = makeSut();
+      const { Sut, connection, mockGenerateUuid } = makeSut();
 
       const act = () => {
-        new Sut(connection, undefined);
+        new Sut(connection, undefined, mockGenerateUuid);
+      };
+
+      expect(act).toThrow('You must inject the dependecies');
+    });
+
+    it('Should throw an error if generateUuid is not informed', () => {
+      const { Sut, connection, schema } = makeSut();
+
+      const act = () => {
+        new Sut(connection, schema, undefined);
       };
 
       expect(act).toThrow('You must inject the dependecies');
     });
 
     it('Should return an object containning the connection and the schema', () => {
-      const { Sut, connection, schema } = makeSut();
+      const { Sut, connection, schema, mockGenerateUuid } = makeSut();
 
-      const mongodb = new Sut(connection, schema);
+      const mongodb = new Sut(connection, schema, mockGenerateUuid);
       const keys = Object.keys(mongodb);
 
       expect(mongodb).toBeInstanceOf(Object);
-      expect(keys).toStrictEqual(['_connection', '_schema']);
+      expect(keys).toStrictEqual(['_connection', '_schema', '_generateUuid']);
     });
   });
 
   describe('MongoDB Methods', () => {
-    describe('create', () => {
-      it('Should throw an error if call the method without the item', async () => {
-        const { Sut, connection, schema, mockedModelsFn } = makeSut();
-        const mongo = new Sut(connection, schema);
+    describe('CREATE TEST SUIT', () => {
+      describe('Success cases', () => {
+        it('Should CREATE the item on mongoDB', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            mockedModelsFn,
+            mockInput,
+            mockReturnValue,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
 
-        const act = async () => {
-          await mongo.create();
-        };
+          mockedModelsFn.create = jest.fn().mockReturnValue(mockReturnValue);
 
-        expect(mockedModelsFn.create).not.toHaveBeenCalled();
-        await expect(act).rejects.toThrow(
-          'You must inform the item to be inserted',
-        );
-      });
+          const result = await mongo.create(mockInput);
 
-      it('Should throw an error if mongo create rejects', async () => {
-        const {
-          Sut,
-          connection,
-          schema,
-          mockedModelsFn,
-          errorMessage,
-          mockInput,
-        } = makeSut();
-        const mongo = new Sut(connection, schema);
-
-        mockedModelsFn.create = jest.fn(() =>
-          Promise.reject(new Error(errorMessage)),
-        );
-
-        const act = async () => {
-          await mongo.create(mockInput);
-        };
-
-        await expect(act).rejects.toThrow('Error creating data on mongoDB');
-        expect(mockedModelsFn.create).toHaveBeenCalled();
-      });
-
-      it('Should create the item on mongoDB', async () => {
-        const {
-          Sut,
-          connection,
-          schema,
-          mockedModelsFn,
-          mockInput,
-          mockReturnValue,
-        } = makeSut();
-        const mongo = new Sut(connection, schema);
-
-        mockedModelsFn.create = jest.fn().mockReturnValue(mockReturnValue);
-
-        const result = await mongo.create(mockInput);
-
-        await expect(result).toStrictEqual(mockReturnValue);
-        expect(mockedModelsFn.create).toHaveBeenCalled();
-      });
-    });
-
-    describe('read', () => {
-      it('Should return an error if read fails/throw', async () => {
-        const {
-          Sut,
-          connection,
-          schema,
-          mockUUID,
-          mockedModelsFn,
-          mockFind,
-          errorMessage,
-        } = makeSut();
-        const mongo = new Sut(connection, schema);
-        const searchItem = { _id: mockUUID };
-
-        mockFind.limit = jest.fn(() => Promise.reject(new Error(errorMessage)));
-
-        const act = async () => {
-          await mongo.read(searchItem);
-        };
-
-        await expect(act).rejects.toThrow('Error getting data from mongoDB');
-        expect(mockedModelsFn.find).toHaveBeenCalled();
-        expect(mockFind.skip).toHaveBeenCalledWith(0);
-        expect(mockFind.limit).toHaveBeenCalledWith(10);
-      });
-
-      it('Should return an array with the results', async () => {
-        const {
-          Sut,
-          connection,
-          schema,
-          mockUUID,
-          mockedModelsFn,
-          mockFind,
-          mockReturnValue,
-        } = makeSut();
-        const mongo = new Sut(connection, schema);
-        const searchItem = { _id: mockUUID };
-
-        mockFind.limit = jest.fn(() => mockReturnValue);
-
-        const result = await mongo.read(searchItem);
-
-        await expect(result).toBe(mockReturnValue);
-        expect(mockedModelsFn.find).toHaveBeenCalled();
-        expect(mockFind.skip).toHaveBeenCalledWith(0);
-        expect(mockFind.limit).toHaveBeenCalledWith(10);
-      });
-    });
-
-    describe('update', () => {
-      it('Should throw an error if uuid is not sent', async () => {
-        const {
-          Sut,
-          connection,
-          schema,
-          mockUpdate,
-          mockedModelsFn,
-        } = makeSut();
-        const mongo = new Sut(connection, schema);
-
-        const act = async () => {
-          await mongo.update(undefined, mockUpdate);
-        };
-
-        await expect(act).rejects.toThrow(
-          'You must inform the UUID to be updated',
-        );
-        expect(mockedModelsFn.updateOne).not.toHaveBeenCalled();
-      });
-
-      it('Should throw an error if item is not sent', async () => {
-        const { Sut, connection, schema, mockUUID, mockedModelsFn } = makeSut();
-        const mongo = new Sut(connection, schema);
-
-        const act = async () => {
-          await mongo.update(mockUUID, undefined);
-        };
-
-        await expect(act).rejects.toThrow(
-          'You must inform the item to be updated',
-        );
-        expect(mockedModelsFn.updateOne).not.toHaveBeenCalled();
-      });
-
-      it('Should fail if any error happens on updateOne from mongooose', async () => {
-        const {
-          Sut,
-          connection,
-          schema,
-          errorMessage,
-          mockUUID,
-          mockUpdate,
-          mockedModelsFn,
-        } = makeSut();
-        const mongo = new Sut(connection, schema);
-
-        mockedModelsFn.updateOne = jest.fn(() =>
-          Promise.reject(new Error(errorMessage)),
-        );
-
-        const act = async () => {
-          await mongo.update(mockUUID, mockUpdate);
-        };
-
-        await expect(act).rejects.toThrow('Error updating data on mongoDB');
-        expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
-          { _id: mockUUID },
-          { $set: mockUpdate },
-        );
-      });
-
-      it('Should update successfuly and result a summary of transaction', async () => {
-        const {
-          Sut,
-          connection,
-          schema,
-          mockUUID,
-          mockUpdate,
-          mockedModelsFn,
-        } = makeSut();
-        const mongo = new Sut(connection, schema);
-        const expectedResult = { n: 1, nModified: 1, ok: 1 };
-
-        mockedModelsFn.updateOne = jest.fn().mockReturnValue(expectedResult);
-
-        const result = await mongo.update(mockUUID, mockUpdate);
-
-        expect(result).toBe(expectedResult);
-        expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
-          { _id: mockUUID },
-          { $set: mockUpdate },
-        );
-      });
-
-      it('Should not update if id does not exist and result a summary of transaction', async () => {
-        const {
-          Sut,
-          connection,
-          schema,
-          mockUUID,
-          mockUpdate,
-          mockedModelsFn,
-        } = makeSut();
-        const mongo = new Sut(connection, schema);
-        const expectedResult = { n: 0, nModified: 0, ok: 1 };
-
-        mockedModelsFn.updateOne = jest.fn().mockReturnValue(expectedResult);
-
-        const result = await mongo.update(mockUUID, mockUpdate);
-
-        expect(result).toBe(expectedResult);
-        expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
-          { _id: mockUUID },
-          { $set: mockUpdate },
-        );
-      });
-    });
-
-    describe('delete', () => {
-      it('should return an error if deleteOne from mongoose fails', async () => {
-        const {
-          Sut,
-          connection,
-          schema,
-          errorMessage,
-          mockedModelsFn,
-          mockUUID,
-        } = makeSut();
-        const mongo = new Sut(connection, schema);
-
-        mockedModelsFn.deleteOne = jest.fn(() =>
-          Promise.reject(new Error(errorMessage)),
-        );
-
-        const act = async () => {
-          await mongo.delete(mockUUID);
-        };
-
-        await expect(act).rejects.toThrow('Error deleting data on mongoDB');
-        expect(mockedModelsFn.deleteOne).toHaveBeenCalledWith({
-          _id: mockUUID,
+          await expect(result).toStrictEqual(mockReturnValue);
+          expect(mockedModelsFn.create).toHaveBeenCalled();
         });
       });
 
-      it('should return an error if deleteMany from mongoose fails', async () => {
-        const {
-          Sut,
-          connection,
-          schema,
-          errorMessage,
-          mockedModelsFn,
-        } = makeSut();
-        const mongo = new Sut(connection, schema);
+      describe('Failure cases', () => {
+        it('Should throw an error if call the method without the item', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            mockedModelsFn,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
 
-        mockedModelsFn.deleteMany = jest.fn(() =>
-          Promise.reject(new Error(errorMessage)),
-        );
+          const act = async () => {
+            await mongo.create();
+          };
 
-        const act = async () => {
-          await mongo.delete();
-        };
+          expect(mockedModelsFn.create).not.toHaveBeenCalled();
+          await expect(act).rejects.toThrow(
+            'You must inform the item to be inserted',
+          );
+        });
 
-        await expect(act).rejects.toThrow('Error deleting data on mongoDB');
-        expect(mockedModelsFn.deleteMany).toHaveBeenCalledWith({});
+        it('Should throw an error if mongo create rejects', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            mockedModelsFn,
+            errorMessage,
+            mockInput,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
+
+          mockedModelsFn.create = jest.fn(() =>
+            Promise.reject(new Error(errorMessage)),
+          );
+
+          const act = async () => {
+            await mongo.create(mockInput);
+          };
+
+          await expect(act).rejects.toThrow('Error creating data on mongoDB');
+          expect(mockedModelsFn.create).toHaveBeenCalled();
+        });
       });
+    });
 
-      it('should delete based on id using deleteOne from mongoose', async () => {
-        const { Sut, connection, schema, mockedModelsFn, mockUUID } = makeSut();
-        const mongo = new Sut(connection, schema);
+    describe('READ TEST SUIT', () => {
+      describe('Success cases', () => {
+        it('Should READ and return an array with the results', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            mockUUID,
+            mockedModelsFn,
+            mockFind,
+            mockReturnValue,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
+          const searchItem = { _id: mockUUID };
 
-        mockedModelsFn.deleteOne = jest
-          .fn()
-          .mockReturnValue({ n: 1, ok: 1, deletedCount: 1 });
+          mockFind.limit = jest.fn(() => mockReturnValue);
 
-        const result = await mongo.delete(mockUUID);
+          const result = await mongo.read(searchItem);
 
-        expect(result).toStrictEqual({ n: 1, ok: 1, deletedCount: 1 });
-        expect(mockedModelsFn.deleteOne).toHaveBeenCalledWith({
-          _id: mockUUID,
+          await expect(result).toBe(mockReturnValue);
+          expect(mockedModelsFn.find).toHaveBeenCalled();
+          expect(mockFind.skip).toHaveBeenCalledWith(0);
+          expect(mockFind.limit).toHaveBeenCalledWith(10);
+        });
+      });
+      describe('Failure cases', () => {
+        it('Should return an error if read fails/throw', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            mockUUID,
+            mockedModelsFn,
+            mockFind,
+            errorMessage,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
+          const searchItem = { _id: mockUUID };
+
+          mockFind.limit = jest.fn(() =>
+            Promise.reject(new Error(errorMessage)),
+          );
+
+          const act = async () => {
+            await mongo.read(searchItem);
+          };
+
+          await expect(act).rejects.toThrow('Error getting data from mongoDB');
+          expect(mockedModelsFn.find).toHaveBeenCalled();
+          expect(mockFind.skip).toHaveBeenCalledWith(0);
+          expect(mockFind.limit).toHaveBeenCalledWith(10);
+        });
+      });
+    });
+
+    describe('UPDATE TEST SUIT', () => {
+      describe('Success cases', () => {
+        it('Should UPDATE successfuly and result a summary of transaction', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            mockUUID,
+            mockUpdate,
+            mockedModelsFn,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
+          const expectedResult = { n: 1, nModified: 1, ok: 1 };
+
+          mockedModelsFn.updateOne = jest.fn().mockReturnValue(expectedResult);
+
+          const result = await mongo.update(mockUUID, mockUpdate);
+
+          expect(result).toBe(expectedResult);
+          expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
+            { _id: mockUUID },
+            { $set: mockUpdate },
+            {},
+          );
+        });
+
+        it('Should not UPDATE if id does not exists and must show a summary of transaction', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            mockUUID,
+            mockUpdate,
+            mockedModelsFn,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
+          const expectedResult = { n: 0, nModified: 0, ok: 1 };
+
+          mockedModelsFn.updateOne = jest.fn().mockReturnValue(expectedResult);
+
+          const result = await mongo.update(mockUUID, mockUpdate);
+
+          expect(result).toBe(expectedResult);
+          expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
+            { _id: mockUUID },
+            { $set: mockUpdate },
+            {},
+          );
+        });
+
+        it('Should UPSERT successfuly and result a summary of transaction', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            mockUpdate,
+            mockedModelsFn,
+            mockUUID,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
+          const expectedResult = {
+            n: 1,
+            nModified: 0,
+            upserted: [{ index: 0, _id: mockUUID }],
+            ok: 1,
+          };
+
+          mockedModelsFn.updateOne = jest.fn().mockReturnValue(expectedResult);
+
+          const result = await mongo.update(null, mockUpdate, true);
+
+          expect(result).toBe(expectedResult);
+          expect(mockGenerateUuid).toHaveBeenCalled();
+          expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
+            { _id: mockUUID },
+            { $set: mockUpdate },
+            {
+              new: true,
+              rawResult: true,
+              setDefaultsOnInsert: true,
+              upsert: true,
+            },
+          );
         });
       });
 
-      it('should delete all using deleteMany from mongoose', async () => {
-        const { Sut, connection, schema, mockedModelsFn } = makeSut();
-        const mongo = new Sut(connection, schema);
+      describe('Failure cases', () => {
+        it('Should throw an error if uuid is not sent', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            mockUpdate,
+            mockedModelsFn,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
 
-        mockedModelsFn.deleteMany = jest
-          .fn()
-          .mockReturnValue({ n: 2, ok: 1, deletedCount: 2 });
+          const act = async () => {
+            await mongo.update(undefined, mockUpdate);
+          };
 
-        const result = await mongo.delete();
+          await expect(act).rejects.toThrow(
+            'You must inform the UUID to be updated',
+          );
+          expect(mockedModelsFn.updateOne).not.toHaveBeenCalled();
+        });
 
-        expect(result).toStrictEqual({ n: 2, ok: 1, deletedCount: 2 });
-        expect(mockedModelsFn.deleteMany).toHaveBeenCalledWith({});
+        it('Should throw an error if item is not sent', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            mockUUID,
+            mockedModelsFn,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
+
+          const act = async () => {
+            await mongo.update(mockUUID, undefined);
+          };
+
+          await expect(act).rejects.toThrow(
+            'You must inform the item to be updated',
+          );
+          expect(mockedModelsFn.updateOne).not.toHaveBeenCalled();
+        });
+
+        it('Should fail if any error happens on updateOne from mongooose', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            errorMessage,
+            mockUUID,
+            mockUpdate,
+            mockedModelsFn,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
+
+          mockedModelsFn.updateOne = jest.fn(() =>
+            Promise.reject(new Error(errorMessage)),
+          );
+
+          const act = async () => {
+            await mongo.update(mockUUID, mockUpdate);
+          };
+
+          await expect(act).rejects.toThrow('Error updating data on mongoDB');
+          expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
+            { _id: mockUUID },
+            { $set: mockUpdate },
+            {},
+          );
+        });
+      });
+    });
+
+    describe('DELETE TEST SUIT', () => {
+      describe('Success cases', () => {
+        it('should DELETE based on id using deleteOne from mongoose', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            mockedModelsFn,
+            mockUUID,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
+
+          mockedModelsFn.deleteOne = jest
+            .fn()
+            .mockReturnValue({ n: 1, ok: 1, deletedCount: 1 });
+
+          const result = await mongo.delete(mockUUID);
+
+          expect(result).toStrictEqual({ n: 1, ok: 1, deletedCount: 1 });
+          expect(mockedModelsFn.deleteOne).toHaveBeenCalledWith({
+            _id: mockUUID,
+          });
+        });
+
+        it('should DELETE all using deleteMany from mongoose', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            mockedModelsFn,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
+
+          mockedModelsFn.deleteMany = jest
+            .fn()
+            .mockReturnValue({ n: 2, ok: 1, deletedCount: 2 });
+
+          const result = await mongo.delete();
+
+          expect(result).toStrictEqual({ n: 2, ok: 1, deletedCount: 2 });
+          expect(mockedModelsFn.deleteMany).toHaveBeenCalledWith({});
+        });
+      });
+
+      describe('Failure cases', () => {
+        it('should return an error if deleteOne from mongoose fails', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            errorMessage,
+            mockedModelsFn,
+            mockUUID,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
+
+          mockedModelsFn.deleteOne = jest.fn(() =>
+            Promise.reject(new Error(errorMessage)),
+          );
+
+          const act = async () => {
+            await mongo.delete(mockUUID);
+          };
+
+          await expect(act).rejects.toThrow('Error deleting data on mongoDB');
+          expect(mockedModelsFn.deleteOne).toHaveBeenCalledWith({
+            _id: mockUUID,
+          });
+        });
+
+        it('should return an error if deleteMany from mongoose fails', async () => {
+          const {
+            Sut,
+            connection,
+            schema,
+            mockGenerateUuid,
+            errorMessage,
+            mockedModelsFn,
+          } = makeSut();
+          const mongo = new Sut(connection, schema, mockGenerateUuid);
+
+          mockedModelsFn.deleteMany = jest.fn(() =>
+            Promise.reject(new Error(errorMessage)),
+          );
+
+          const act = async () => {
+            await mongo.delete();
+          };
+
+          await expect(act).rejects.toThrow('Error deleting data on mongoDB');
+          expect(mockedModelsFn.deleteMany).toHaveBeenCalledWith({});
+        });
       });
     });
   });
