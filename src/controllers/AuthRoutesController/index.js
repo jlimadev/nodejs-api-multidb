@@ -24,7 +24,7 @@ class AuthRoutesController {
           error: 'Unauthorized',
           message: 'Invalid username or password',
         };
-        return response.json(error).status(error.statusCode);
+        return response.status(error.statusCode).json(error);
       }
 
       const token = this.jwtSign(
@@ -38,15 +38,45 @@ class AuthRoutesController {
       const auth = { auth: true, token };
       return response.json(auth).status(200);
     } catch (error) {
-      return response.json(error.message).status(500);
+      return response.status(500).json(error.message);
+    }
+  }
+
+  async signUp(request, response) {
+    try {
+      const { username, password } = request.body;
+      const hashedPassword = await this.passwordHelper.hashPassword(password);
+
+      const [userExists] = await this.db.read({
+        username: username.toLowerCase(),
+      });
+
+      if (userExists) {
+        const error = {
+          statusCode: 409,
+          error: 'Conflict',
+          message: 'This user already exists',
+        };
+        return response.status(error.statusCode).json(error);
+      }
+
+      const result = await this.db.create({
+        username: username.toLowerCase(),
+        password: hashedPassword,
+      });
+
+      const createdUser = { _id: result._id, username: result.username };
+
+      return response.status(200).json(createdUser);
+    } catch (error) {
+      console.log(error);
+      return response.status(500).json(error);
     }
   }
 
   async signOut(request, response) {
-    response.json({ auth: false, token: null }).status(200);
+    return response.status(200).json({ auth: false, token: null });
   }
-
-  async signUp() {}
 }
 
 module.exports = AuthRoutesController;
