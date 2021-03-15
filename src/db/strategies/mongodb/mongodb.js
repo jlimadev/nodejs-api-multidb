@@ -78,6 +78,7 @@ class MongoDB extends ICrud {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useFindAndModify: false,
+        useCreateIndex: true,
       };
 
       Mongoose.connect(uri, options);
