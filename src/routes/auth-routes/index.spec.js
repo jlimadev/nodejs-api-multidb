@@ -14,6 +14,7 @@ const makeSut = () => {
 
   const mockedValidations = jest.fn().mockReturnValue({
     celebrateValidateSignIn: mockCallback,
+    celebrateValidateSignUp: mockCallback,
   });
 
   const sut = authRoutes;

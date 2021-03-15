@@ -1,6 +1,6 @@
 const request = require('supertest');
 const heroRoutes = require('.');
-const { app, mongoConnection } = require('../');
+const { app, mongoConnection } = require('../..');
 let testId = '2a93ef58-95ce-4f19-b0e6-9e2698788a6d';
 
 const mockInsertHero = {
