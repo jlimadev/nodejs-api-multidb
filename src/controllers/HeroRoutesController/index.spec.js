@@ -15,10 +15,12 @@ const makeSut = () => {
   };
 
   const mockedDatabase = {
-    read: jest.fn().mockReturnValue(bodyResponse),
-    create: jest.fn().mockReturnValue(bodyResponse),
-    update: jest.fn().mockReturnValue(updateResponse),
-    delete: jest.fn().mockReturnValue(deleteResponse),
+    db: {
+      read: jest.fn().mockReturnValue(bodyResponse),
+      create: jest.fn().mockReturnValue(bodyResponse),
+      update: jest.fn().mockReturnValue(updateResponse),
+      delete: jest.fn().mockReturnValue(deleteResponse),
+    },
   };
 
   const mockedRequest = {
@@ -189,7 +191,7 @@ describe('HeroRoutesController test suit', () => {
         errorResponse,
       } = makeSut();
 
-      mockedDatabase.read = jest.fn().mockRejectedValue(errorMessage);
+      mockedDatabase.db.read = jest.fn().mockRejectedValue(errorMessage);
 
       const heroRoutesController = new Sut(mockedDatabase);
       const response = await heroRoutesController.list(
@@ -215,7 +217,7 @@ describe('HeroRoutesController test suit', () => {
       } = makeSut();
       const heroRoutesController = new Sut(mockedDatabase);
 
-      mockedDatabase.create = jest.fn().mockRejectedValue(errorMessage);
+      mockedDatabase.db.create = jest.fn().mockRejectedValue(errorMessage);
 
       const response = await heroRoutesController.create(
         mockedRequest,
@@ -240,7 +242,7 @@ describe('HeroRoutesController test suit', () => {
       } = makeSut();
       const heroRoutesController = new Sut(mockedDatabase);
 
-      mockedDatabase.update = jest.fn().mockRejectedValue(errorMessage);
+      mockedDatabase.db.update = jest.fn().mockRejectedValue(errorMessage);
 
       const response = await heroRoutesController.update(
         mockedRequest,
@@ -265,7 +267,7 @@ describe('HeroRoutesController test suit', () => {
       } = makeSut();
       const heroRoutesController = new Sut(mockedDatabase);
 
-      mockedDatabase.delete = jest.fn().mockRejectedValue(errorMessage);
+      mockedDatabase.db.delete = jest.fn().mockRejectedValue(errorMessage);
 
       const response = await heroRoutesController.delete(
         mockedRequest,

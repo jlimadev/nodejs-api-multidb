@@ -16,11 +16,6 @@ const {
   authMongoStrategy,
 } = require('../db/strategies/mongodb/buildMongoConnections');
 
-// const {
-//   authPostgresConnection,
-//   authPostgresStrategy,
-// } = require('../db/strategies/postgres/buildPostgresConnections');
-
 const AuthRoutesController = require('../controllers/AuthRoutesController/');
 const authRoutesController = new AuthRoutesController({
   secret: secret,
@@ -30,7 +25,9 @@ const authRoutesController = new AuthRoutesController({
 });
 
 const HeroRoutesController = require('../controllers/HeroRoutesController');
-const heroRoutesController = new HeroRoutesController(heroesMongoStrategy);
+const heroRoutesController = new HeroRoutesController({
+  db: heroesMongoStrategy,
+});
 
 const app = express();
 

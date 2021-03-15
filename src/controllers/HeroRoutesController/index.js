@@ -1,6 +1,6 @@
 class HeroRoutesController {
-  constructor(db) {
-    this.db = db;
+  constructor(deps) {
+    this.db = deps.db;
   }
 
   async list(request, response) {
