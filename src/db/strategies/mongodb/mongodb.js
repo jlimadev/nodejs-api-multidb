@@ -1,16 +1,16 @@
 const ICrud = require('../interfaces/ICrud');
 const Mongoose = require('mongoose');
-const isUUID = require('../../../utils/validate-uuid');
 
 class MongoDB extends ICrud {
-  constructor(connection, schema) {
+  constructor(connection, schema, generateUuid) {
     super();
 
-    if (!connection || !schema)
+    if (!connection || !schema || !generateUuid)
       throw new Error('You must inject the dependecies');
 
     this._connection = connection;
     this._schema = schema;
+    this._generateUuid = generateUuid;
   }
 
   async create(item) {
@@ -35,14 +35,25 @@ class MongoDB extends ICrud {
     }
   }
 
-  async update(id, item) {
-    if (!id || !isUUID(id))
+  async update(id, item, upsert = false) {
+    if (!id && !upsert)
       throw new Error('You must inform the UUID to be updated');
 
     if (!item) throw new Error('You must inform the item to be updated');
 
     try {
-      return await this._schema.updateOne({ _id: id }, { $set: item });
+      const query = id ? { _id: id } : { _id: this._generateUuid() };
+      const updateValue = { $set: item };
+      const options = upsert
+        ? {
+            new: true,
+            upsert: true,
+            rawResult: true,
+            setDefaultsOnInsert: true,
+          }
+        : {};
+
+      return await this._schema.updateOne(query, updateValue, options);
     } catch (error) {
       const errorMessage = 'Error updating data on mongoDB';
       throw Error(errorMessage);
@@ -66,6 +77,7 @@ class MongoDB extends ICrud {
       const options = {
         useNewUrlParser: true,
         useUnifiedTopology: true,
+        useFindAndModify: false,
       };
 
       Mongoose.connect(uri, options);
