@@ -14,7 +14,7 @@ module.exports = {
     '!src/**/debug*.js',
     '!src/**/mongodbCommands.js',
     '!src/**/ContextStrategy.js',
-    '!src/**/heroesSchema.js',
+    '!src/**/*Schema.js',
     '!src/utils/tests/*.js',
     '!src/server.js',
   ],
