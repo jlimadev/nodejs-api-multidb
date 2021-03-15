@@ -1,0 +1,16 @@
+const Mongoose = require('mongoose');
+const { v4 } = require('uuid');
+
+const modelName = 'auth';
+
+const authSchema = new Mongoose.Schema({
+  _id: { type: String, required: true, default: v4 },
+  username: { type: String, required: true, unique: true, dropDups: true },
+  password: { type: String, required: true },
+});
+
+const authModel = Mongoose.models[modelName]
+  ? Mongoose.model(modelName)
+  : Mongoose.model(modelName, authSchema);
+
+module.exports = authModel;
