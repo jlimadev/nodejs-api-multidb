@@ -20,8 +20,8 @@ class AuthRoutesController {
 
       if (!user || !passwordMatches) {
         const error = {
-          statusCode: 401,
-          error: 'Unauthorized',
+          statusCode: 404,
+          error: 'Not Found',
           message: 'Invalid username or password',
         };
         return response.status(error.statusCode).json(error);
