@@ -7,7 +7,6 @@ class HeroRoutesController {
     try {
       const { query } = request;
       const { name, skip, limit } = query;
-
       const search = query.name ? { name: { $regex: `.*${name}*.` } } : {};
 
       const dbResponse = await this.db.read(
@@ -15,10 +14,19 @@ class HeroRoutesController {
         parseInt(skip),
         parseInt(limit),
       );
-      // ADD WHEN USER NOT FOUND
-      return response.json(dbResponse).status(200);
+
+      if (query.name && dbResponse.length === 0) {
+        const error = {
+          statusCode: 404,
+          error: 'Not Found',
+          message: 'Invalid username or password',
+        };
+        return response.status(error.statusCode).json(error);
+      }
+
+      return response.status(200).json(dbResponse);
     } catch (error) {
-      return response.json({ error: error.message }).status(500);
+      return response.status(500).json({ error: error.message });
     }
   }
 
@@ -26,9 +34,9 @@ class HeroRoutesController {
     try {
       const { name, power } = request.body;
       const dbResponse = await this.db.create({ name, power });
-      return response.json(dbResponse).status(200);
+      return response.status(200).json(dbResponse);
     } catch (error) {
-      return response.json({ error: error.message }).status(500);
+      return response.status(500).json({ error: error.message });
     }
   }
 
@@ -39,9 +47,9 @@ class HeroRoutesController {
       const patchData = JSON.parse(JSON.stringify(body));
 
       const dbResponse = await this.db.update(id, patchData);
-      return response.json(dbResponse).status(200);
+      return response.status(200).json(dbResponse);
     } catch (error) {
-      return response.json({ error: error.message }).status(500);
+      return response.status(500).json({ error: error.message });
     }
   }
 
@@ -49,9 +57,9 @@ class HeroRoutesController {
     try {
       const id = request.params.id;
       const dbResponse = await this.db.delete(id);
-      return response.json(dbResponse).status(200);
+      return response.status(200).json(dbResponse);
     } catch (error) {
-      return response.json({ error: error.message }).status(500);
+      return response.status(500).json({ error: error.message });
     }
   }
 }

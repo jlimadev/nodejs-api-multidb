@@ -14,9 +14,15 @@ const makeSut = () => {
     body: [bodyResponse],
   };
 
+  const notFoundResponse = {
+    statusCode: 404,
+    error: 'Not Found',
+    message: 'Invalid username or password',
+  };
+
   const mockedDatabase = {
     db: {
-      read: jest.fn().mockReturnValue(bodyResponse),
+      read: jest.fn().mockReturnValue([bodyResponse]),
       create: jest.fn().mockReturnValue(bodyResponse),
       update: jest.fn().mockReturnValue(updateResponse),
       delete: jest.fn().mockReturnValue(deleteResponse),
@@ -36,13 +42,18 @@ const makeSut = () => {
   };
 
   const mockedResponse = {
-    json: jest.fn().mockReturnThis(),
-    status: jest.fn().mockReturnValue(successResponse),
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn().mockReturnValue(successResponse),
   };
 
   const mockedErrorResponse = {
-    json: jest.fn().mockReturnThis(),
-    status: jest.fn().mockReturnValue(errorResponse),
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn().mockReturnValue(errorResponse),
+  };
+
+  const mockedNotFoundResponse = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn().mockReturnValue(notFoundResponse),
   };
 
   return {
@@ -54,8 +65,10 @@ const makeSut = () => {
     updateResponse,
     deleteResponse,
     mockedErrorResponse,
+    mockedNotFoundResponse,
     errorMessage,
     errorResponse,
+    notFoundResponse,
   };
 };
 
@@ -87,7 +100,7 @@ describe('HeroRoutesController test suit', () => {
       );
 
       expect(response).toStrictEqual(successResponse);
-      expect(mockedResponse.json).toHaveBeenCalledWith(successResponse.body[0]);
+      expect(mockedResponse.json).toHaveBeenCalledWith(successResponse.body);
       expect(mockedResponse.status).toHaveBeenCalledWith(200);
     });
 
@@ -109,7 +122,7 @@ describe('HeroRoutesController test suit', () => {
       );
 
       expect(response).toStrictEqual(successResponse);
-      expect(mockedResponse.json).toHaveBeenCalledWith(successResponse.body[0]);
+      expect(mockedResponse.json).toHaveBeenCalledWith(successResponse.body);
       expect(mockedResponse.status).toHaveBeenCalledWith(200);
     });
 
@@ -181,7 +194,33 @@ describe('HeroRoutesController test suit', () => {
   });
 
   describe('Failure cases', () => {
-    it('Should throw an error if database method "read" fails', async () => {
+    it('Should return 404 - [Not Found] if read dont find any item', async () => {
+      const {
+        Sut,
+        mockedDatabase,
+        mockedRequest,
+        mockedNotFoundResponse,
+        notFoundResponse,
+      } = makeSut();
+      const heroRoutesController = new Sut(mockedDatabase);
+
+      mockedDatabase.db.read = jest.fn().mockReturnValue([]);
+      mockedRequest.query.name = 'AnyInvalid';
+      mockedRequest.body = [];
+
+      const response = await heroRoutesController.list(
+        mockedRequest,
+        mockedNotFoundResponse,
+      );
+
+      expect(response).toStrictEqual(notFoundResponse);
+      expect(mockedNotFoundResponse.status).toHaveBeenCalledWith(404);
+      expect(mockedNotFoundResponse.json).toHaveBeenCalledWith(
+        notFoundResponse,
+      );
+    });
+
+    it('Should return 500 - [Bad Request] if database method "read" fails', async () => {
       const {
         Sut,
         mockedDatabase,
@@ -206,7 +245,7 @@ describe('HeroRoutesController test suit', () => {
       });
     });
 
-    it('Should throw an error if database method "create" fails', async () => {
+    it('Should return 500 - [Bad Request] if database method "create" fails', async () => {
       const {
         Sut,
         mockedDatabase,
@@ -231,7 +270,7 @@ describe('HeroRoutesController test suit', () => {
       });
     });
 
-    it('Should throw an error if database method "update" fails', async () => {
+    it('Should return 500 - [Bad Request] if database method "update" fails', async () => {
       const {
         Sut,
         mockedDatabase,
@@ -256,7 +295,7 @@ describe('HeroRoutesController test suit', () => {
       });
     });
 
-    it('Should throw an error if database method "delete" fails', async () => {
+    it('Should return 500 - [Bad Request] if database method "delete" fails', async () => {
       const {
         Sut,
         mockedDatabase,
