@@ -2,9 +2,11 @@
 
 Using Strategy Design Pattern to implement a multi-database project and mocha/chai to test.
 
-The API was made with `express` and dynamic validation with `celebrate`. To generate the swagger `swagger-ui-express`.
+The API was made with `express` and dynamic validation with `celebrate`.
 
-And last but not least, the JWT token authentication. This authentication was built with two libs: `express-jwt` as plugin and `jsonwebtoken` to generate/validate the token.
+To generate the swagger was used `swagger-ui-express` and `swagger-jsdoc` with an `OpenAPI 3 spec`.
+
+And last but not least, the JWT token authentication. This authentication was built with `jsonwebtoken` to generate/validate the token. We heave one middleware to check the authentication.
 
 For this project you can use Postgres or MongoDB, but if you want to add any other database, feel free to do it.
 
