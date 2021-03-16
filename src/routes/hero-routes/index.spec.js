@@ -2,14 +2,12 @@ const request = require('supertest');
 const heroRoutes = require('.');
 const { app, mongoConnection } = require('../..');
 let testId = '2a93ef58-95ce-4f19-b0e6-9e2698788a6d';
-
-const mockInsertHero = {
-  name: 'any name',
-  power: 'any power',
-};
+process.env.JWT_SECRET = 'SUPERBIGSECRET';
 
 const makeSut = () => {
   const mockCallback = jest.fn().mockReturnValue(jest.fn());
+
+  const mockedCheckAuthentication = jest.fn((req, res, next) => next());
 
   const mockedHeroRoute = {
     list: mockCallback,
@@ -27,7 +25,22 @@ const makeSut = () => {
 
   const sut = heroRoutes;
 
-  return { sut, mockedHeroRoute, mockedValidations };
+  const mockedToken =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFueXVzZXJuYW1lIiwiaWQiOiJjN2IxMmE3MS1lYjFmLTRlZWItOTIwNS04Mjc2ZDk3OTRiNDMiLCJpYXQiOjE2MTU4OTUwMDJ9.LsjDdUvTWYeX2Z__OMj85j8Mz0Z5LHkOOe_WnzaeFec';
+
+  const mockInsertHero = {
+    name: 'any name',
+    power: 'any power',
+  };
+
+  return {
+    sut,
+    mockedCheckAuthentication,
+    mockedHeroRoute,
+    mockedValidations,
+    mockedToken,
+    mockInsertHero,
+  };
 };
 
 describe('heroRoutes test suit', () => {
@@ -37,34 +50,43 @@ describe('heroRoutes test suit', () => {
 
   describe('heroRoutes function test suit', () => {
     it('Should create a route', async () => {
-      const { sut, mockedHeroRoute, mockedValidations } = makeSut();
-      const route = sut(mockedHeroRoute, mockedValidations);
+      const {
+        sut,
+        mockedCheckAuthentication,
+        mockedHeroRoute,
+        mockedValidations,
+      } = makeSut();
+      const route = sut(
+        mockedCheckAuthentication,
+        mockedHeroRoute,
+        mockedValidations,
+      );
       expect(route).toBeInstanceOf(Function);
     });
 
     it('Should fail if an error happens in heroRoutes instance', () => {
-      const { sut, mockedValidations } = makeSut();
+      const { sut, mockedCheckAuthentication, mockedValidations } = makeSut();
 
       const mockedHeroRoute = jest.fn().mockImplementation(() => {
         throw new Error();
       });
 
       const act = () => {
-        sut(mockedHeroRoute, mockedValidations);
+        sut(mockedCheckAuthentication, mockedHeroRoute, mockedValidations);
       };
 
       expect(act).toThrow();
     });
 
     it('Should fail if an error happens in heroRoutes validations function', () => {
-      const { mockedHeroRoute } = makeSut();
+      const { mockedCheckAuthentication, mockedHeroRoute } = makeSut();
 
       const mockedValidations = jest.fn(() => {
         throw new Error();
       });
 
       const act = () => {
-        sut(mockedHeroRoute, mockedValidations);
+        sut(mockedCheckAuthentication, mockedHeroRoute, mockedValidations);
       };
 
       expect(act).toThrow();
@@ -74,10 +96,12 @@ describe('heroRoutes test suit', () => {
   describe('test /heroes route', () => {
     describe('CREATE | POST', () => {
       describe('Success cases', () => {
-        it('Should return [Success] 200 status if creates successfuly', async () => {
+        it('Should return 201 status [Created] if creates successfuly', async () => {
+          const { mockedToken, mockInsertHero } = makeSut();
           const response = await request(app)
             .post('/heroes')
-            .send(mockInsertHero);
+            .send(mockInsertHero)
+            .set('Authorization', `Bearer ${mockedToken}`);
           const { status, body } = response;
 
           testId = body._id;
@@ -86,19 +110,20 @@ describe('heroRoutes test suit', () => {
           const resultKeys = Object.keys(body);
           const createdHero = { name: body.name, power: body.power };
 
-          expect(status).toBe(200);
+          expect(status).toBe(201);
           expect(resultKeys).toEqual(expectedKeys);
           expect(createdHero).toEqual(mockInsertHero);
         });
       });
 
-      describe('Failure cases', () => {
-        it('Should return [Bad Request] when create a new hero without a name', async () => {
+      describe.only('Failure cases', () => {
+        it('Should return 400 Status [Bad Request] when create a new hero without a name', async () => {
+          const { mockedToken } = makeSut();
           const createInvalidHero = { power: 'Any power' };
           const response = await request(app)
             .post('/heroes')
-            .send(createInvalidHero);
-
+            .send(createInvalidHero)
+            .set('Authorization', `Bearer ${mockedToken}`);
           const { statusCode, error, validation } = response.body;
           const {
             body: { message },
@@ -109,12 +134,13 @@ describe('heroRoutes test suit', () => {
           expect(message).toBe('"name" is required');
         });
 
-        it('Should return [Bad Request] when create a hero without power', async () => {
+        it('Should return 400 Status [Bad Request] when create a hero without power', async () => {
+          const { mockedToken } = makeSut();
           const createInvalidHero = { name: 'Any hero' };
           const response = await request(app)
             .post('/heroes')
-            .send(createInvalidHero);
-
+            .send(createInvalidHero)
+            .set('Authorization', `Bearer ${mockedToken}`);
           const { statusCode, error, validation } = response.body;
           const {
             body: { message },
@@ -123,6 +149,31 @@ describe('heroRoutes test suit', () => {
           expect(statusCode).toBe(400);
           expect(error).toBe('Bad Request');
           expect(message).toBe('"power" is required');
+        });
+
+        it('Should return  401 status [Unauthorized] when try to create a hero without sending token', async () => {
+          const { mockInsertHero } = makeSut();
+          const response = await request(app)
+            .post('/heroes')
+            .send(mockInsertHero);
+          const { statusCode, error, message } = response.body;
+
+          expect(statusCode).toBe(401);
+          expect(error).toBe('Unauthorized');
+          expect(message).toBe('JWT token is missing');
+        });
+
+        it('Should return 401 status [Unauthorized] when try to create a hero with a invalid token', async () => {
+          const { mockInsertHero } = makeSut();
+          const response = await request(app)
+            .post('/heroes')
+            .send(mockInsertHero)
+            .set('Authorization', `Bearer InvalidToken`);
+          const { statusCode, error, message } = response.body;
+
+          expect(statusCode).toBe(401);
+          expect(error).toBe('Unauthorized');
+          expect(message).toBe('Invalid JWT Token');
         });
       });
     });
