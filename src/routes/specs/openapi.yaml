@@ -12,9 +12,165 @@ info:
 servers:
   - url: 'http://localhost:4000'
 paths:
+  /auth/signup:
+    post:
+      summary: '[SignUp] - Register a new user'
+      operationId: post-auth-signup
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    minLength: 1
+                  username:
+                    type: string
+                    minLength: 1
+                required:
+                  - _id
+                  - username
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  error:
+                    type: string
+                    minLength: 1
+                  message:
+                    type: string
+                    minLength: 1
+                required:
+                  - statusCode
+                  - error
+                  - message
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUp-User'
+            examples:
+              example-1:
+                value:
+                  username: anyusername
+                  password: anypassword
+                  passwordConfirmation: anypassword
+              example-2:
+                value:
+                  username: anotheruser
+                  password: anypassword
+                  passwordConfirmation: anypassword
+          application/xml:
+            schema:
+              description: ''
+              type: object
+              properties:
+                username:
+                  type: string
+                  minLength: 1
+                password:
+                  type: string
+                  minLength: 1
+                passwordConfirmation:
+                  type: string
+                  minLength: 1
+              required:
+                - username
+                - password
+                - passwordConfirmation
+        description: The request body must contain the username and the password (with confirmation)
+      description: Sign Up to heroes portal
+      tags:
+        - Authentication
+  /auth/signin:
+    post:
+      summary: '[SignIn] - Login to the application'
+      operationId: post-auth
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  auth:
+                    type: boolean
+                  token:
+                    type: string
+                    minLength: 1
+                required:
+                  - auth
+                  - token
+              examples:
+                example-1:
+                  value:
+                    auth: true
+                    token: string
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  error:
+                    type: string
+                    minLength: 1
+                  message:
+                    type: string
+                    minLength: 1
+                required:
+                  - statusCode
+                  - error
+                  - message
+              examples:
+                example-1:
+                  value:
+                    statusCode: 0
+                    error: string
+                    message: string
+        '500':
+          description: Internal Server Error
+      description: Sign in to heroes portal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignIn-User'
+            examples:
+              anyusername:
+                value:
+                  username: anyusername
+                  password: anypassword
+              anotheruser:
+                value:
+                  username: anotheruser
+                  password: anypassword
+        description: ''
+      tags:
+        - Authentication
+    parameters: []
   /heroes:
     get:
-      summary: Get User Info by User ID
+      summary: Get heroes from application
       responses:
         '200':
           description: User Found
@@ -126,7 +282,7 @@ paths:
       security:
         - bearerAuth: []
     post:
-      summary: ''
+      summary: Register a new hero
       operationId: post-heroes
       responses:
         '201':
@@ -211,191 +367,116 @@ paths:
                   power: Power
       security:
         - bearerAuth: []
-  /auth/signup:
-    post:
-      summary: '[SignUp] - Register a new user'
-      operationId: post-auth-signup
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  _id:
-                    type: string
-                    minLength: 1
-                  username:
-                    type: string
-                    minLength: 1
-                required:
-                  - _id
-                  - username
-        '409':
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  statusCode:
-                    type: number
-                  error:
-                    type: string
-                    minLength: 1
-                  message:
-                    type: string
-                    minLength: 1
-                required:
-                  - statusCode
-                  - error
-                  - message
-        '500':
-          description: Internal Server Error
-      requestBody:
-        content:
-          application/json:
-            schema:
-              description: ''
-              type: object
-              properties:
-                username:
-                  type: string
-                  minLength: 1
-                password:
-                  type: string
-                  minLength: 1
-                passwordConfirmation:
-                  type: string
-                  minLength: 1
-              required:
-                - username
-                - password
-                - passwordConfirmation
-            examples:
-              anyusername:
-                value:
-                  username: anyusername
-                  password: anypassword
-                  passwordConfirmation: anypassword
-              anotheruser:
-                value:
-                  username: anotheruser
-                  password: anypassword
-                  passwordConfirmation: anypassword
-          application/xml:
-            schema:
-              description: ''
-              type: object
-              properties:
-                username:
-                  type: string
-                  minLength: 1
-                password:
-                  type: string
-                  minLength: 1
-                passwordConfirmation:
-                  type: string
-                  minLength: 1
-              required:
-                - username
-                - password
-                - passwordConfirmation
-        description: The request body must contain the username and the password (with confirmation)
-      description: Sign Up to heroes portal
-      tags:
-        - Authentication
-  /auth/signin:
-    post:
-      summary: '[SignIn] - Login to the application'
-      operationId: post-auth
-      responses:
-        '200':
-          description: OK
-          headers: {}
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  auth:
-                    type: boolean
-                  token:
-                    type: string
-                    minLength: 1
-                required:
-                  - auth
-                  - token
-              examples:
-                example-1:
-                  value:
-                    auth: true
-                    token: string
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  statusCode:
-                    type: number
-                  error:
-                    type: string
-                    minLength: 1
-                  message:
-                    type: string
-                    minLength: 1
-                required:
-                  - statusCode
-                  - error
-                  - message
-              examples:
-                example-1:
-                  value:
-                    statusCode: 0
-                    error: string
-                    message: string
-        '500':
-          description: Internal Server Error
-      description: Sign in to heroes portal
-      requestBody:
-        content:
-          application/json:
-            schema:
-              description: ''
-              type: object
-              properties:
-                username:
-                  type: string
-                  minLength: 1
-                password:
-                  type: string
-                  minLength: 1
-              required:
-                - username
-                - password
-            examples:
-              anyusername:
-                value:
-                  username: anyusername
-                  password: anypassword
-              anotheruser:
-                value:
-                  username: anotheruser
-                  password: anypassword
-        description: ''
-      tags:
-        - Authentication
     parameters: []
+  '/heroes/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    patch:
+      summary: Update heroes data
+      operationId: patch-heroes-id
+      responses:
+        '200':
+          description: OK
+      tags:
+        - Heroes
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                power:
+                  type: string
+                  minLength: 1
+    delete:
+      summary: Delete an hero by id
+      operationId: delete-heroes-id
+      responses:
+        '200':
+          description: OK
+      tags:
+        - Heroes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      security:
+        - bearerAuth: []
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    SignUp-User:
+      description: ''
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+        passwordConfirmation:
+          type: string
+          minLength: 1
+      required:
+        - username
+        - password
+        - passwordConfirmation
+      x-examples:
+        example-1:
+          username: anyusername
+          password: anypassword
+          passwordConfirmation: anypassword
+        example-2:
+          username: anotheruser
+          password: anypassword
+          passwordConfirmation: anypassword
+    SignIn-User:
+      description: ''
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+      required:
+        - username
+        - password
+      x-examples:
+        example-1:
+          username: anyusername
+          password: anypassword
+        example-2:
+          username: anotheruser
+          password: anypassword
+    Heroes:
+      description: ''
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        power:
+          type: string
+          minLength: 1
+      required:
+        - name
+        - power
