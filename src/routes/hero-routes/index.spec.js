@@ -116,7 +116,7 @@ describe('heroRoutes test suit', () => {
         });
       });
 
-      describe.only('Failure cases', () => {
+      describe('Failure cases', () => {
         it('Should return 400 Status [Bad Request] when create a new hero without a name', async () => {
           const { mockedToken } = makeSut();
           const createInvalidHero = { power: 'Any power' };
@@ -178,26 +178,35 @@ describe('heroRoutes test suit', () => {
       });
     });
 
-    describe('LIST | GET', () => {
+    describe.only('LIST | GET', () => {
       describe('Success cases', () => {
-        it('Should return 200 status if list successfuly', async () => {
-          const response = await request(app).get('/heroes');
+        it('Should return 200 status [Success] if list successfuly', async () => {
+          const { mockedToken } = makeSut();
+          const response = await request(app)
+            .get('/heroes')
+            .set('Authorization', `Bearer ${mockedToken}`);
           expect(response.status).toBe(200);
         });
 
         it('Should return an array if list successfuly', async () => {
-          const response = await request(app).get('/heroes');
+          const { mockedToken } = makeSut();
+          const response = await request(app)
+            .get('/heroes')
+            .set('Authorization', `Bearer ${mockedToken}`);
           expect(response.body).toBeInstanceOf(Array);
         });
 
         it('Should list successfuly using correct query parameters', async () => {
+          const { mockedToken, mockInsertHero } = makeSut();
+
           const LIMIT = 10;
           const SKIP = 0;
           const NAME = 'any';
 
           const response = await request(app)
             .get('/heroes')
-            .query({ limit: LIMIT, skip: SKIP, name: NAME });
+            .query({ limit: LIMIT, skip: SKIP, name: NAME })
+            .set('Authorization', `Bearer ${mockedToken}`);
 
           const [firstHero] = response.body;
           const listedHero = { name: firstHero.name, power: firstHero.power };
@@ -208,14 +217,17 @@ describe('heroRoutes test suit', () => {
       });
 
       describe('Failure cases', () => {
-        it('Should return [Bad Request] when get using incorrect name in query parameters', async () => {
+        it('Should return 400 Status [Bad Request] when get using incorrect name in query parameters', async () => {
+          const { mockedToken } = makeSut();
+
           const LIMIT = 10;
           const SKIP = 0;
           const NAME = 'an';
 
           const response = await request(app)
             .get('/heroes')
-            .query({ limit: LIMIT, skip: SKIP, name: NAME });
+            .query({ limit: LIMIT, skip: SKIP, name: NAME })
+            .set('Authorization', `Bearer ${mockedToken}`);
 
           const { statusCode, error, validation } = response.body;
           const {
@@ -229,14 +241,17 @@ describe('heroRoutes test suit', () => {
           );
         });
 
-        it('Should return [Bad Request] when get using incorrect "limit" in query parameters', async () => {
+        it('Should return 400 Status [Bad Request] when get using incorrect "limit" in query parameters', async () => {
+          const { mockedToken } = makeSut();
+
           const LIMIT = 'limit';
           const SKIP = 0;
           const NAME = 'Any';
 
           const response = await request(app)
             .get('/heroes')
-            .query({ limit: LIMIT, skip: SKIP, name: NAME });
+            .query({ limit: LIMIT, skip: SKIP, name: NAME })
+            .set('Authorization', `Bearer ${mockedToken}`);
 
           const { statusCode, error, validation } = response.body;
           const {
@@ -248,14 +263,17 @@ describe('heroRoutes test suit', () => {
           expect(message).toBe('"limit" must be a number');
         });
 
-        it('Should return [Bad Request] when get using incorrect "skip" in query parameters', async () => {
+        it('Should return 400 Status [Bad Request] when get using incorrect "skip" in query parameters', async () => {
+          const { mockedToken } = makeSut();
+
           const LIMIT = 0;
           const SKIP = 'skip';
           const NAME = 'Any';
 
           const response = await request(app)
             .get('/heroes')
-            .query({ limit: LIMIT, skip: SKIP, name: NAME });
+            .query({ limit: LIMIT, skip: SKIP, name: NAME })
+            .set('Authorization', `Bearer ${mockedToken}`);
 
           const { statusCode, error, validation } = response.body;
           const {
@@ -265,6 +283,33 @@ describe('heroRoutes test suit', () => {
           expect(statusCode).toBe(400);
           expect(error).toBe('Bad Request');
           expect(message).toBe('"skip" must be a number');
+        });
+
+        it('Should return  401 status [Unauthorized] when try to list a hero without sending token', async () => {
+          const { mockInsertHero } = makeSut();
+          const response = await request(app)
+            .get('/heroes')
+            .send(mockInsertHero);
+
+          const { statusCode, error, message } = response.body;
+
+          expect(statusCode).toBe(401);
+          expect(error).toBe('Unauthorized');
+          expect(message).toBe('JWT token is missing');
+        });
+
+        it('Should return 401 status [Unauthorized] when try to create a hero with a invalid token', async () => {
+          const { mockInsertHero } = makeSut();
+          const response = await request(app)
+            .get('/heroes')
+            .send(mockInsertHero)
+            .set('Authorization', `Bearer InvalidToken`);
+
+          const { statusCode, error, message } = response.body;
+
+          expect(statusCode).toBe(401);
+          expect(error).toBe('Unauthorized');
+          expect(message).toBe('Invalid JWT Token');
         });
       });
     });
@@ -284,7 +329,7 @@ describe('heroRoutes test suit', () => {
       });
 
       describe('Failure cases', () => {
-        it('Should return [Bad Request] if send an invalid UUID', async () => {
+        it('Should return 400 Status [Bad Request] if send an invalid UUID', async () => {
           const patchObject = { power: 'any updated power' };
           const response = await request(app)
             .patch('/heroes/invalidUUID')
@@ -300,7 +345,7 @@ describe('heroRoutes test suit', () => {
           expect(message).toBe('"id" must be a valid GUID');
         });
 
-        it('Should return [Bad Request] when send an invalid power inside the body to patch', async () => {
+        it('Should return 400 Status [Bad Request] when send an invalid power inside the body to patch', async () => {
           const patchInvalidObject = { power: 'a' };
           const response = await request(app)
             .patch(`/heroes/${testId}`)
@@ -318,7 +363,7 @@ describe('heroRoutes test suit', () => {
           );
         });
 
-        it('Should return [Bad Request] when send an invalid name inside the body to patch', async () => {
+        it('Should return 400 Status [Bad Request] when send an invalid name inside the body to patch', async () => {
           const patchInvalidObject = { name: 'a'.repeat(101) };
           const response = await request(app)
             .patch(`/heroes/${testId}`)
