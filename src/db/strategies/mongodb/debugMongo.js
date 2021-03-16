@@ -1,7 +1,7 @@
+const { v4 } = require('uuid');
 const MongoDB = require('./mongodb');
 const heroesSchema = require('./schemas/heroesSchema');
 const ContextStrategy = require('../context/ContextStrategy');
-const { v4 } = require('uuid');
 
 const call = async () => {
   const connection = MongoDB.connect();
@@ -12,13 +12,13 @@ const call = async () => {
   // await mongodb.create({ name: 'Jon', power: 'Nainha' });
   // const result = await mongodb.read();
 
-  //UPDATE
+  // UPDATE
   // const result = await mongodb.update('19cb7c30-da60-45e4-b6ea-0a1f889da84c', {
   //   name: 'Jon',
   //   power: 'Tureco',
   // });
 
-  //UPSERT;
+  // UPSERT;
   const result = await mongodb.update(
     null,
     {

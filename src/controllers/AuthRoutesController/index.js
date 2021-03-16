@@ -21,8 +21,8 @@ class AuthRoutesController {
       if (!user || !passwordMatches) {
         const error = {
           statusCode: 404,
-          error: 'Not Found',
-          message: 'Invalid username or password',
+          error: "Not Found",
+          message: "Invalid username or password",
         };
         return response.status(error.statusCode).json(error);
       }
@@ -32,7 +32,7 @@ class AuthRoutesController {
           username,
           id: user.id,
         },
-        this.secret,
+        this.secret
       );
 
       const auth = { auth: true, token };
@@ -54,8 +54,8 @@ class AuthRoutesController {
       if (userExists) {
         const error = {
           statusCode: 409,
-          error: 'Conflict',
-          message: 'This user already exists',
+          error: "Conflict",
+          message: "This user already exists",
         };
         return response.status(error.statusCode).json(error);
       }
@@ -69,7 +69,6 @@ class AuthRoutesController {
 
       return response.status(200).json(createdUser);
     } catch (error) {
-      console.log(error);
       return response.status(500).json(error);
     }
   }

@@ -1,4 +1,4 @@
-const { Router } = require('express');
+const { Router } = require("express");
 
 const authRoutes = (authRoutesController, authRoutesValidations) => {
   const authRouter = Router();
@@ -8,20 +8,20 @@ const authRoutes = (authRoutesController, authRoutesValidations) => {
   } = authRoutesValidations();
 
   authRouter.post(
-    '/signin',
+    "/signin",
     celebrateValidateSignIn(),
-    authRoutesController.signIn.bind(authRoutesController),
+    authRoutesController.signIn.bind(authRoutesController)
   );
 
   authRouter.post(
-    '/signup',
+    "/signup",
     celebrateValidateSignUp(),
-    authRoutesController.signUp.bind(authRoutesController),
+    authRoutesController.signUp.bind(authRoutesController)
   );
 
   authRouter.post(
-    '/signout',
-    authRoutesController.signOut.bind(authRoutesController),
+    "/signout",
+    authRoutesController.signOut.bind(authRoutesController)
   );
 
   return authRouter;

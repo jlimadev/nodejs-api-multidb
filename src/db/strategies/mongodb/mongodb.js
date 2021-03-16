@@ -1,12 +1,12 @@
-const ICrud = require('../interfaces/ICrud');
-const Mongoose = require('mongoose');
+const Mongoose = require("mongoose");
+const ICrud = require("../interfaces/ICrud");
 
 class MongoDB extends ICrud {
   constructor(connection, schema, generateUuid) {
     super();
 
     if (!connection || !schema || !generateUuid)
-      throw new Error('You must inject the dependecies');
+      throw new Error("You must inject the dependecies");
 
     this._connection = connection;
     this._schema = schema;
@@ -15,7 +15,7 @@ class MongoDB extends ICrud {
 
   async create(item) {
     if (!item) {
-      throw new Error('You must inform the item to be inserted');
+      throw new Error("You must inform the item to be inserted");
     }
 
     try {
@@ -35,9 +35,9 @@ class MongoDB extends ICrud {
 
   async update(id, item, upsert = false) {
     if (!id && !upsert)
-      throw new Error('You must inform the UUID to be updated');
+      throw new Error("You must inform the UUID to be updated");
 
-    if (!item) throw new Error('You must inform the item to be updated');
+    if (!item) throw new Error("You must inform the item to be updated");
 
     try {
       const query = id ? { _id: id } : { _id: this._generateUuid() };
@@ -69,7 +69,7 @@ class MongoDB extends ICrud {
 
   static connect() {
     try {
-      const uri = 'mongodb://jlimadev:secretpass@localhost:27017/heroes';
+      const uri = "mongodb://jlimadev:secretpass@localhost:27017/heroes";
       const options = {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -79,7 +79,7 @@ class MongoDB extends ICrud {
 
       Mongoose.connect(uri, options);
 
-      const connection = Mongoose.connection;
+      const { connection } = Mongoose;
 
       return connection;
     } catch (error) {

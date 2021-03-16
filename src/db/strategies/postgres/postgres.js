@@ -1,12 +1,12 @@
-const ICrud = require('../interfaces/ICrud');
-const { Sequelize } = require('sequelize');
-const isUUID = require('../../../utils/validate-uuid');
+const { Sequelize } = require("sequelize");
+const ICrud = require("../interfaces/ICrud");
+const isUUID = require("../../../utils/validate-uuid");
 
 class Postgres extends ICrud {
   constructor(connection, schema) {
     super();
     if (!connection || !schema)
-      throw new Error('You must inject the dependecies');
+      throw new Error("You must inject the dependecies");
 
     this._connection = connection;
     this._schema = schema;
@@ -14,14 +14,14 @@ class Postgres extends ICrud {
 
   async create(item) {
     if (!item) {
-      throw new Error('You must send the body to create the item');
+      throw new Error("You must send the body to create the item");
     }
 
     try {
       const { dataValues } = await this._schema.create(item);
       return dataValues;
     } catch (error) {
-      const errorMessage = 'Error creating data on postgres';
+      const errorMessage = "Error creating data on postgres";
       throw Error(errorMessage);
     }
   }
@@ -31,42 +31,42 @@ class Postgres extends ICrud {
       return await this._schema.findAll({
         where: item,
         offset: skip,
-        limit: limit,
+        limit,
         raw: true,
       });
     } catch (error) {
-      const errorMessage = 'Error on reading data from postgres';
+      const errorMessage = "Error on reading data from postgres";
       throw Error(errorMessage);
     }
   }
 
   async update(id, item) {
     if (!id || !item) {
-      throw new Error('You must inform the id and the item');
+      throw new Error("You must inform the id and the item");
     }
 
     if (!isUUID(id)) {
-      throw new Error('This id is not an UUID');
+      throw new Error("This id is not an UUID");
     }
 
     try {
-      return await this._schema.update(item, { where: { id: id } });
+      return await this._schema.update(item, { where: { id } });
     } catch (error) {
-      const errorMessage = 'Error on update data on postgres';
+      const errorMessage = "Error on update data on postgres";
       throw Error(errorMessage);
     }
   }
 
   async delete(id) {
     if (id && !isUUID(id)) {
-      throw new Error('This id is not an UUID');
+      throw new Error("This id is not an UUID");
     }
 
     try {
       const query = id ? { id } : {};
       return await this._schema.destroy({ where: query });
     } catch (error) {
-      const errorMessage = 'Error on delete data on postgres';
+      const errorMessage = "Error on delete data on postgres";
       throw Error(errorMessage);
     }
   }
@@ -76,58 +76,58 @@ class Postgres extends ICrud {
       await this._connection.authenticate();
       return true;
     } catch (error) {
-      const errorMessage = 'Error to authenticate on postgres';
+      const errorMessage = "Error to authenticate on postgres";
       throw Error(errorMessage);
     }
   }
 
   static connect() {
     try {
-      const connection = new Sequelize('heroes', 'root', 'root', {
-        host: 'localhost',
-        dialect: 'postgres',
+      const connection = new Sequelize("heroes", "root", "root", {
+        host: "localhost",
+        dialect: "postgres",
         quoteIdentifiers: false,
         operatorsAliases: 0,
         logging: false,
       });
       return connection;
     } catch (error) {
-      const errorMessage = 'Error on connect with postgres';
+      const errorMessage = "Error on connect with postgres";
       throw Error(errorMessage);
     }
   }
 
   static disconnect(connection) {
     if (!connection) {
-      throw new Error('You must inform the connection to be closed');
+      throw new Error("You must inform the connection to be closed");
     }
 
     try {
       connection.close();
       return true;
     } catch (error) {
-      const errorMessage = 'Error on close connection with postgres';
+      const errorMessage = "Error on close connection with postgres";
       throw Error(errorMessage);
     }
   }
 
   static async defineModel(connection, schema) {
     if (!connection || !schema) {
-      throw new Error('You must inform the connection and schema');
+      throw new Error("You must inform the connection and schema");
     }
 
     try {
       const heroesModel = connection.define(
         schema.name,
         schema.schema,
-        schema.options,
+        schema.options
       );
 
       await heroesModel.sync();
 
       return heroesModel;
     } catch (error) {
-      const errorMessage = 'Error on define model to postgres/sequelize';
+      const errorMessage = "Error on define model to postgres/sequelize";
       throw Error(errorMessage);
     }
   }
