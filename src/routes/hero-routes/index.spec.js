@@ -96,7 +96,7 @@ describe('heroRoutes test suit', () => {
   describe('test /heroes route', () => {
     describe('CREATE | POST', () => {
       describe('Success cases', () => {
-        it('Should return 201 status [Created] if creates successfuly', async () => {
+        it.only('Should return 201 status [Created] if creates successfuly', async () => {
           const { mockedToken, mockInsertHero } = makeSut();
           const response = await request(app)
             .post('/heroes')
@@ -151,7 +151,7 @@ describe('heroRoutes test suit', () => {
           expect(message).toBe('"power" is required');
         });
 
-        it('Should return  401 status [Unauthorized] when try to create a hero without sending token', async () => {
+        it('Should return 401 Status [Unauthorized] when try to create a hero without sending token', async () => {
           const { mockInsertHero } = makeSut();
           const response = await request(app)
             .post('/heroes')
@@ -163,7 +163,7 @@ describe('heroRoutes test suit', () => {
           expect(message).toBe('JWT token is missing');
         });
 
-        it('Should return 401 status [Unauthorized] when try to create a hero with a invalid token', async () => {
+        it('Should return 401 Status [Unauthorized] when try to create a hero with a invalid token', async () => {
           const { mockInsertHero } = makeSut();
           const response = await request(app)
             .post('/heroes')
@@ -178,7 +178,7 @@ describe('heroRoutes test suit', () => {
       });
     });
 
-    describe.only('LIST | GET', () => {
+    describe('LIST | GET', () => {
       describe('Success cases', () => {
         it('Should return 200 status [Success] if list successfuly', async () => {
           const { mockedToken } = makeSut();
@@ -285,7 +285,7 @@ describe('heroRoutes test suit', () => {
           expect(message).toBe('"skip" must be a number');
         });
 
-        it('Should return  401 status [Unauthorized] when try to list a hero without sending token', async () => {
+        it('Should return 401 Status [Unauthorized] when try to list a hero without sending token', async () => {
           const { mockInsertHero } = makeSut();
           const response = await request(app)
             .get('/heroes')
@@ -298,7 +298,7 @@ describe('heroRoutes test suit', () => {
           expect(message).toBe('JWT token is missing');
         });
 
-        it('Should return 401 status [Unauthorized] when try to create a hero with a invalid token', async () => {
+        it('Should return 401 Status [Unauthorized] when try to create a hero with a invalid token', async () => {
           const { mockInsertHero } = makeSut();
           const response = await request(app)
             .get('/heroes')
@@ -314,15 +314,17 @@ describe('heroRoutes test suit', () => {
       });
     });
 
-    describe('UPDATE | PATCH ', () => {
+    describe.only('UPDATE | PATCH ', () => {
       describe('Success cases', () => {
         it('Should update the hero by id', async () => {
+          const { mockedToken } = makeSut();
           const patchObject = { power: 'any updated power' };
           const expectedResponse = { n: 1, nModified: 1, ok: 1 };
 
           const response = await request(app)
             .patch(`/heroes/${testId}`)
-            .send(patchObject);
+            .send(patchObject)
+            .set('Authorization', `Bearer ${mockedToken}`);
 
           expect(response.body).toStrictEqual(expectedResponse);
         });
@@ -330,10 +332,12 @@ describe('heroRoutes test suit', () => {
 
       describe('Failure cases', () => {
         it('Should return 400 Status [Bad Request] if send an invalid UUID', async () => {
+          const { mockedToken } = makeSut();
           const patchObject = { power: 'any updated power' };
           const response = await request(app)
             .patch('/heroes/invalidUUID')
-            .send(patchObject);
+            .send(patchObject)
+            .set('Authorization', `Bearer ${mockedToken}`);
 
           const { statusCode, error, validation } = response.body;
           const {
@@ -346,10 +350,12 @@ describe('heroRoutes test suit', () => {
         });
 
         it('Should return 400 Status [Bad Request] when send an invalid power inside the body to patch', async () => {
+          const { mockedToken } = makeSut();
           const patchInvalidObject = { power: 'a' };
           const response = await request(app)
             .patch(`/heroes/${testId}`)
-            .send(patchInvalidObject);
+            .send(patchInvalidObject)
+            .set('Authorization', `Bearer ${mockedToken}`);
 
           const { statusCode, error, validation } = response.body;
           const {
@@ -364,10 +370,12 @@ describe('heroRoutes test suit', () => {
         });
 
         it('Should return 400 Status [Bad Request] when send an invalid name inside the body to patch', async () => {
+          const { mockedToken } = makeSut();
           const patchInvalidObject = { name: 'a'.repeat(101) };
           const response = await request(app)
             .patch(`/heroes/${testId}`)
-            .send(patchInvalidObject);
+            .send(patchInvalidObject)
+            .set('Authorization', `Bearer ${mockedToken}`);
 
           const { statusCode, error, validation } = response.body;
           const {
@@ -379,6 +387,33 @@ describe('heroRoutes test suit', () => {
           expect(message).toBe(
             '"name" length must be less than or equal to 100 characters long',
           );
+        });
+
+        it('Should return 401 Status [Unauthorized] when try to patch a hero without sending token', async () => {
+          const patchObject = { power: 'any updated power' };
+
+          const response = await request(app)
+            .patch(`/heroes/${testId}`)
+            .send(patchObject);
+
+          const { statusCode, error, message } = response.body;
+
+          expect(statusCode).toBe(401);
+          expect(error).toBe('Unauthorized');
+          expect(message).toBe('JWT token is missing');
+        });
+
+        it('Should return 401 Status [Unauthorized] when try to patch a hero with a invalid token', async () => {
+          const patchObject = { power: 'any updated power' };
+          const response = await request(app)
+            .patch(`/heroes/${testId}`)
+            .send(patchObject)
+            .set('Authorization', `Bearer InvalidToken`);
+          const { statusCode, error, message } = response.body;
+
+          expect(statusCode).toBe(401);
+          expect(error).toBe('Unauthorized');
+          expect(message).toBe('Invalid JWT Token');
         });
       });
     });
