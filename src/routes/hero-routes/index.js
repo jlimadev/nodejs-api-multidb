@@ -1,7 +1,10 @@
 const { Router } = require('express');
-const checkAuthentication = require('../middlewares/checkAuthentication');
 
-const defineHeroRoutes = (heroRoutesController, heroRoutesValidations) => {
+const defineHeroRoutes = (
+  checkAuthentication,
+  heroRoutesController,
+  heroRoutesValidations,
+) => {
   try {
     const heroRouter = Router();
 
@@ -40,7 +43,7 @@ const defineHeroRoutes = (heroRoutesController, heroRoutesValidations) => {
 
     return heroRouter;
   } catch (err) {
-    throw Error(err);
+    throw Error(err.message);
   }
 };
 

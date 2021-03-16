@@ -9,7 +9,7 @@ const checkAuthentication = (request, response, next) => {
       error: 'Unauthorized',
       message: 'JWT token is missing',
     };
-    response.status(error.statusCode).send(error);
+    return response.status(error.statusCode).send(error);
   }
 
   const token = authHeader.split(' ')[1];
@@ -24,7 +24,7 @@ const checkAuthentication = (request, response, next) => {
       error: 'Unauthorized',
       message: 'Invalid JWT Token',
     };
-    response.status(error.statusCode).send(error);
+    return response.status(error.statusCode).send(error);
   }
 };
 

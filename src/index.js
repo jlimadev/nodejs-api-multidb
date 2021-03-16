@@ -8,6 +8,7 @@ const swaggerUi = require('swagger-ui-express');
 const heroRoutes = require('./routes/hero-routes');
 const authRoutes = require('./routes/auth-routes');
 const passwordHelper = require('./utils/password-helper');
+const checkAuthentication = require('./routes/middlewares/checkAuthentication');
 const heroRoutesValidations = require('./utils/celebrate-validations/heroRoutesValidations');
 const authRoutesValidations = require('./utils/celebrate-validations/authRoutesValidations');
 
@@ -54,7 +55,10 @@ app.use(cors());
 app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/auth', authRoutes(authRoutesController, authRoutesValidations));
-app.use('/heroes', heroRoutes(heroRoutesController, heroRoutesValidations));
+app.use(
+  '/heroes',
+  heroRoutes(checkAuthentication, heroRoutesController, heroRoutesValidations),
+);
 app.use(errors());
 
 module.exports = { app, mongoConnection };
