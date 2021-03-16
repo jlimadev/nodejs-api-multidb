@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const checkAuthentication = require('../middlewares/checkAuthentication');
 
 const defineHeroRoutes = (heroRoutesController, heroRoutesValidations) => {
   try {
@@ -10,6 +11,8 @@ const defineHeroRoutes = (heroRoutesController, heroRoutesValidations) => {
       celebrateValidatePatch,
       celebrateValidateDelete,
     } = heroRoutesValidations();
+
+    heroRouter.use(checkAuthentication);
 
     heroRouter.get(
       '/',
