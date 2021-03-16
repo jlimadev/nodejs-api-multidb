@@ -1,0 +1,281 @@
+openapi: 3.0.0
+info:
+  title: nodejs-openapi
+  version: '1.0'
+  contact:
+    name: Jonathan Lima
+    url: 'https://github.com/jlimadev'
+    email: jlima.dev@gmail.com
+  license:
+    name: MIT
+  description: Application to manage heroes
+servers:
+  - url: 'http://localhost:4000'
+paths:
+  /heroes:
+    parameters: []
+    get:
+      summary: Get User Info by User ID
+      tags:
+        - heroes
+      responses:
+        '200':
+          description: User Found
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ''
+                minItems: 1
+                uniqueItems: true
+                items:
+                  type: object
+                  required:
+                    - createdAt
+                    - _id
+                    - __v
+                    - name
+                    - power
+                  properties:
+                    createdAt:
+                      type: string
+                      minLength: 1
+                    _id:
+                      type: string
+                      minLength: 1
+                    __v:
+                      type: number
+                    name:
+                      type: string
+                      minLength: 1
+                    power:
+                      type: string
+                      minLength: 1
+              examples:
+                example-1:
+                  value:
+                    - createdAt: string
+                      _id: string
+                      __v: 0
+                      name: string
+                      power: string
+        '404':
+          description: User Not Found
+        '500':
+          description: Internal Server Error
+      operationId: get-heroes-userId
+      description: Retrieve the information from heroes with the matching user ID.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: name
+          description: Hero name
+        - schema:
+            type: number
+          in: query
+          name: skip
+          description: Skip heroes
+        - schema:
+            type: string
+          in: query
+          description: Limit heroes
+          name: limit
+      security:
+        - token: []
+    post:
+      summary: ''
+      operationId: post-heroes
+      responses:
+        '200':
+          description: OK
+  /auth/signup:
+    post:
+      summary: '[SignUp] - Register a new user'
+      operationId: post-auth-signup
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    minLength: 1
+                  username:
+                    type: string
+                    minLength: 1
+                required:
+                  - _id
+                  - username
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  error:
+                    type: string
+                    minLength: 1
+                  message:
+                    type: string
+                    minLength: 1
+                required:
+                  - statusCode
+                  - error
+                  - message
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                username:
+                  type: string
+                  minLength: 1
+                password:
+                  type: string
+                  minLength: 1
+                passwordConfirmation:
+                  type: string
+                  minLength: 1
+              required:
+                - username
+                - password
+                - passwordConfirmation
+            examples:
+              anyusername:
+                value:
+                  username: anyusername
+                  password: anypassword
+                  passwordConfirmation: anypassword
+              anotheruser:
+                value:
+                  username: anotheruser
+                  password: anypassword
+                  passwordConfirmation: anypassword
+          application/xml:
+            schema:
+              description: ''
+              type: object
+              properties:
+                username:
+                  type: string
+                  minLength: 1
+                password:
+                  type: string
+                  minLength: 1
+                passwordConfirmation:
+                  type: string
+                  minLength: 1
+              required:
+                - username
+                - password
+                - passwordConfirmation
+        description: The request body must contain the username and the password (with confirmation)
+      description: Sign Up to heroes portal
+      tags:
+        - authentication
+  /auth/signin:
+    post:
+      summary: '[SignIn] - Login to the application'
+      operationId: post-auth
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  auth:
+                    type: boolean
+                  token:
+                    type: string
+                    minLength: 1
+                required:
+                  - auth
+                  - token
+              examples:
+                example-1:
+                  value:
+                    auth: true
+                    token: string
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  error:
+                    type: string
+                    minLength: 1
+                  message:
+                    type: string
+                    minLength: 1
+                required:
+                  - statusCode
+                  - error
+                  - message
+              examples:
+                example-1:
+                  value:
+                    statusCode: 0
+                    error: string
+                    message: string
+        '500':
+          description: Internal Server Error
+      tags:
+        - authentication
+      description: Sign in to heroes portal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                username:
+                  type: string
+                  minLength: 1
+                password:
+                  type: string
+                  minLength: 1
+              required:
+                - username
+                - password
+            examples:
+              anyusername:
+                value:
+                  username: anyusername
+                  password: anypassword
+              anotheruser:
+                value:
+                  username: anotheruser
+                  password: anypassword
+        description: ''
+    parameters: []
+components:
+  schemas: {}
+  securitySchemes:
+    token:
+      type: http
+      scheme: bearer
+security:
+  - API Key - 1: []

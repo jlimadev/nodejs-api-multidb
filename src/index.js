@@ -25,7 +25,7 @@ const swaggerOptions = {
     },
     servers: [{ url: 'http://localhost:4000' }],
   },
-  apis: ['src/routes/**/.js'],
+  apis: ['src/routes/specs/openapi.yaml'],
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
