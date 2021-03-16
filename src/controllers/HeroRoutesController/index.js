@@ -15,11 +15,11 @@ class HeroRoutesController {
         parseInt(limit),
       );
 
-      if (query.name && dbResponse.length === 0) {
+      if (dbResponse.length === 0) {
         const error = {
           statusCode: 404,
           error: 'Not Found',
-          message: 'Invalid username or password',
+          message: 'Hero not found',
         };
         return response.status(error.statusCode).json(error);
       }
@@ -34,7 +34,7 @@ class HeroRoutesController {
     try {
       const { name, power } = request.body;
       const dbResponse = await this.db.create({ name, power });
-      return response.status(200).json(dbResponse);
+      return response.status(201).json(dbResponse);
     } catch (error) {
       return response.status(500).json({ error: error.message });
     }

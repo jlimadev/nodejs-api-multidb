@@ -1,7 +1,7 @@
 const request = require('supertest');
 const authRoutes = require('.');
 
-const { app, mongoConnection } = require('../');
+const { app, mongoConnection } = require('../../');
 
 const makeSut = () => {
   const mockCallback = jest.fn().mockReturnValue(jest.fn());

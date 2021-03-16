@@ -17,7 +17,7 @@ const makeSut = () => {
   const notFoundResponse = {
     statusCode: 404,
     error: 'Not Found',
-    message: 'Invalid username or password',
+    message: 'Hero not found',
   };
 
   const mockedDatabase = {
@@ -136,6 +136,7 @@ describe('HeroRoutesController test suit', () => {
       } = makeSut();
       const heroRoutesController = new Sut(mockedDatabase);
 
+      successResponse.statusCode = 201;
       const response = await heroRoutesController.create(
         mockedRequest,
         mockedResponse,
@@ -143,7 +144,7 @@ describe('HeroRoutesController test suit', () => {
 
       expect(response).toStrictEqual(successResponse);
       expect(mockedResponse.json).toHaveBeenCalledWith(successResponse.body[0]);
-      expect(mockedResponse.status).toHaveBeenCalledWith(200);
+      expect(mockedResponse.status).toHaveBeenCalledWith(201);
     });
 
     it('Should update successfuly', async () => {
