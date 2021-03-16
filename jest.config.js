@@ -12,6 +12,7 @@ module.exports = {
     'src/**/*.js',
     '!**/jest.config.js',
     '!src/**/debug*.js',
+    '!src/**/buildPostgresConnections.js',
     '!src/**/mongodbCommands.js',
     '!src/**/ContextStrategy.js',
     '!src/**/*Schema.js',
