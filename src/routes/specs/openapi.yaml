@@ -13,11 +13,8 @@ servers:
   - url: 'http://localhost:4000'
 paths:
   /heroes:
-    parameters: []
     get:
       summary: Get User Info by User ID
-      tags:
-        - heroes
       responses:
         '200':
           description: User Found
@@ -61,8 +58,51 @@ paths:
                       power: string
         '404':
           description: User Not Found
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  error:
+                    type: string
+                    minLength: 1
+                  message:
+                    type: string
+                    minLength: 1
+                required:
+                  - statusCode
+                  - error
+                  - message
+              examples:
+                example-1:
+                  value:
+                    statusCode: 404
+                    error: Not Found
+                    message: Hero Not Found
         '500':
           description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  error:
+                    type: string
+                    minLength: 1
+                required:
+                  - statusCode
+                  - error
+              examples:
+                example-1:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
       operationId: get-heroes-userId
       description: Retrieve the information from heroes with the matching user ID.
       parameters:
@@ -81,14 +121,96 @@ paths:
           in: query
           description: Limit heroes
           name: limit
+      tags:
+        - Heroes
       security:
-        - token: []
+        - bearerAuth: []
     post:
       summary: ''
       operationId: post-heroes
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  createdAt:
+                    type: string
+                    minLength: 1
+                  _id:
+                    type: string
+                    minLength: 1
+                  __v:
+                    type: number
+                  name:
+                    type: string
+                    minLength: 1
+                  power:
+                    type: string
+                    minLength: 1
+                required:
+                  - createdAt
+                  - _id
+                  - __v
+                  - name
+                  - power
+              examples:
+                example-1:
+                  value:
+                    createdAt: string
+                    _id: string
+                    __v: 0
+                    name: string
+                    power: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  error:
+                    type: string
+                    minLength: 1
+                required:
+                  - statusCode
+                  - error
+              examples:
+                example-1:
+                  value:
+                    statusCode: 500
+                    error: Internal Server Error
+      tags:
+        - Heroes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                power:
+                  type: string
+                  minLength: 1
+              required:
+                - name
+                - power
+            examples:
+              example-1:
+                value:
+                  name: Hero
+                  power: Power
+      security:
+        - bearerAuth: []
   /auth/signup:
     post:
       summary: '[SignUp] - Register a new user'
@@ -185,7 +307,7 @@ paths:
         description: The request body must contain the username and the password (with confirmation)
       description: Sign Up to heroes portal
       tags:
-        - authentication
+        - Authentication
   /auth/signin:
     post:
       summary: '[SignIn] - Login to the application'
@@ -241,8 +363,6 @@ paths:
                     message: string
         '500':
           description: Internal Server Error
-      tags:
-        - authentication
       description: Sign in to heroes portal
       requestBody:
         content:
@@ -270,12 +390,12 @@ paths:
                   username: anotheruser
                   password: anypassword
         description: ''
+      tags:
+        - Authentication
     parameters: []
 components:
-  schemas: {}
   securitySchemes:
-    token:
+    bearerAuth:
       type: http
       scheme: bearer
-security:
-  - API Key - 1: []
+      bearerFormat: JWT
