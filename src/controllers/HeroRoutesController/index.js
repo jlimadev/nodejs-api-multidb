@@ -15,6 +15,7 @@ class HeroRoutesController {
         parseInt(skip),
         parseInt(limit),
       );
+      // ADD WHEN USER NOT FOUND
       return response.json(dbResponse).status(200);
     } catch (error) {
       return response.json({ error: error.message }).status(500);
