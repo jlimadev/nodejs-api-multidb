@@ -96,7 +96,7 @@ describe('heroRoutes test suit', () => {
   describe('test /heroes route', () => {
     describe('CREATE | POST', () => {
       describe('Success cases', () => {
-        it.only('Should return 201 status [Created] if creates successfuly', async () => {
+        it('Should return 201 status [Created] if creates successfuly', async () => {
           const { mockedToken, mockInsertHero } = makeSut();
           const response = await request(app)
             .post('/heroes')
@@ -314,7 +314,7 @@ describe('heroRoutes test suit', () => {
       });
     });
 
-    describe.only('UPDATE | PATCH ', () => {
+    describe('UPDATE | PATCH ', () => {
       describe('Success cases', () => {
         it('Should update the hero by id', async () => {
           const { mockedToken } = makeSut();
@@ -421,30 +421,42 @@ describe('heroRoutes test suit', () => {
     describe('DELETE | DELETE ', () => {
       describe('Success cases', () => {
         it('Should delete one hero by id', async () => {
+          const { mockedToken } = makeSut();
           const expectedResponse = { n: 1, ok: 1, deletedCount: 1 };
-          const response = await request(app).delete(`/heroes/${testId}`);
+          const response = await request(app)
+            .delete(`/heroes/${testId}`)
+            .set('Authorization', `Bearer ${mockedToken}`);
 
           expect(response.body).toStrictEqual(expectedResponse);
         });
 
         it('Should delete all when id is not specified', async () => {
+          const { mockedToken, mockInsertHero } = makeSut();
           const manyHeroes = Array(10).fill(mockInsertHero);
           const expectedResponse = { n: 10, ok: 1, deletedCount: 10 };
 
           /* Insert many heroes with map (async) */
           const promises = manyHeroes.map(async (hero) => {
-            return await request(app).post(`/heroes`).send(hero);
+            return await request(app)
+              .post(`/heroes`)
+              .send(hero)
+              .set('Authorization', `Bearer ${mockedToken}`);
           });
           await Promise.all(promises);
 
-          const response = await request(app).delete(`/heroes`);
+          const response = await request(app)
+            .delete(`/heroes`)
+            .set('Authorization', `Bearer ${mockedToken}`);
           expect(response.body).toStrictEqual(expectedResponse);
         });
       });
 
       describe('Failure cases', () => {
-        it('Should return [Bad Request] if try to delete an specif id but it is not an UUID', async () => {
-          const response = await request(app).delete('/heroes/invalidUUID');
+        it('Should return 400 Status [Bad Request] if try to delete an specif id but it is not an UUID', async () => {
+          const { mockedToken } = makeSut();
+          const response = await request(app)
+            .delete('/heroes/invalidUUID')
+            .set('Authorization', `Bearer ${mockedToken}`);
 
           const { statusCode, error, validation } = response.body;
 
@@ -455,6 +467,27 @@ describe('heroRoutes test suit', () => {
           expect(statusCode).toBe(400);
           expect(error).toBe('Bad Request');
           expect(message).toBe('"id" must be a valid GUID');
+        });
+
+        it('Should return 401 Status [Unauthorized] when try to delete a hero without sending token', async () => {
+          const response = await request(app).delete(`/heroes/${testId}`);
+
+          const { statusCode, error, message } = response.body;
+
+          expect(statusCode).toBe(401);
+          expect(error).toBe('Unauthorized');
+          expect(message).toBe('JWT token is missing');
+        });
+
+        it('Should return 401 Status [Unauthorized] when try to delete a hero with a invalid token', async () => {
+          const response = await request(app)
+            .delete(`/heroes/${testId}`)
+            .set('Authorization', `Bearer InvalidToken`);
+          const { statusCode, error, message } = response.body;
+
+          expect(statusCode).toBe(401);
+          expect(error).toBe('Unauthorized');
+          expect(message).toBe('Invalid JWT Token');
         });
       });
     });
