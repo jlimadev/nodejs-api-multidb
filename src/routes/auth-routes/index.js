@@ -8,7 +8,7 @@ const authRoutes = (authRoutesController, authRoutesValidations) => {
   } = authRoutesValidations();
 
   authRouter.post(
-    '/',
+    '/signin',
     celebrateValidateSignIn(),
     authRoutesController.signIn.bind(authRoutesController),
   );
