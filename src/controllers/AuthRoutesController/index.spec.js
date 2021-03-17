@@ -33,6 +33,13 @@ const makeSut = () => {
     json: jest.fn().mockReturnValue(successResponse),
   };
 
+  const errorMessage = { message: 'any error' };
+  const errorResponse = { statusCode: 500, error: errorMessage };
+  const mockedErrorResponse = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn().mockReturnValue(errorResponse),
+  };
+
   const mockedDatabase = {
     read: jest.fn().mockResolvedValue([]),
     create: jest.fn().mockResolvedValue(createdUser),
@@ -62,6 +69,9 @@ const makeSut = () => {
     successResponse,
     hashedDefaultUser,
     createdUser,
+    errorMessage,
+    errorResponse,
+    mockedErrorResponse,
   };
 };
 
@@ -70,15 +80,15 @@ describe('AuthRoutesController test suit', () => {
     jest.clearAllMocks();
   });
 
-  describe('Class test', () => {
-    describe('Instance test', () => {
-      it('Should be instance of AuthRoutesController', () => {
-        const { Sut, deps } = makeSut();
-        const authRoutesController = new Sut(deps);
-        expect(authRoutesController).toBeInstanceOf(AuthRoutesController);
-      });
+  describe('Instance test', () => {
+    it('Should be instance of AuthRoutesController', () => {
+      const { Sut, deps } = makeSut();
+      const authRoutesController = new Sut(deps);
+      expect(authRoutesController).toBeInstanceOf(AuthRoutesController);
     });
+  });
 
+  describe('SignUp Test Suit', () => {
     describe('Success Cases', () => {
       it('Should return 200 Status [Success] to create a new user', async () => {
         const {
@@ -100,41 +110,63 @@ describe('AuthRoutesController test suit', () => {
         expect(mockedResponse.json).toHaveBeenCalledWith(createdUser);
         expect(mockedResponse.status).toHaveBeenCalledWith(200);
       });
-    });
 
-    describe('Failure Cases', () => {
-      it('Should return 409 Status [Conflict] if try to registter an user that already exists', async () => {
-        const {
-          Sut,
-          deps,
-          mockedRequest,
-          mockedResponse,
-          successResponse,
-          hashedDefaultUser,
-        } = makeSut();
+      describe('Failure Cases', () => {
+        it('Should return 409 Status [Conflict] if try to register an user that already exists', async () => {
+          const {
+            Sut,
+            deps,
+            mockedRequest,
+            mockedResponse,
+            successResponse,
+            hashedDefaultUser,
+          } = makeSut();
 
-        deps.db.read = jest.fn().mockResolvedValue([hashedDefaultUser]);
+          deps.db.read = jest.fn().mockResolvedValue([hashedDefaultUser]);
 
-        const authRoutesController = new Sut(deps);
-        const response = await authRoutesController.signUp(
-          mockedRequest,
-          mockedResponse,
-        );
+          const authRoutesController = new Sut(deps);
+          const response = await authRoutesController.signUp(
+            mockedRequest,
+            mockedResponse,
+          );
 
-        const errorMessage = {
-          statusCode: 409,
-          error: 'Conflict',
-          message: 'This user already exists',
-        };
+          const errorMessage = {
+            statusCode: 409,
+            error: 'Conflict',
+            message: 'This user already exists',
+          };
 
-        expect(response).toStrictEqual(successResponse);
-        expect(mockedResponse.json).toHaveBeenCalledWith(errorMessage);
-        expect(mockedResponse.status).toHaveBeenCalledWith(409);
+          expect(response).toStrictEqual(successResponse);
+          expect(mockedResponse.json).toHaveBeenCalledWith(errorMessage);
+          expect(mockedResponse.status).toHaveBeenCalledWith(409);
+        });
+
+        it('Should return 500 Status [Internal Server Error] if an error occurs in the process', async () => {
+          const {
+            Sut,
+            deps,
+            mockedRequest,
+            errorMessage,
+            errorResponse,
+            mockedErrorResponse,
+          } = makeSut();
+
+          deps.db.read = jest.fn().mockRejectedValue(errorMessage);
+
+          const authRoutesController = new Sut(deps);
+
+          const response = await authRoutesController.signUp(
+            mockedRequest,
+            mockedErrorResponse,
+          );
+
+          expect(response).toStrictEqual(errorResponse);
+          expect(mockedErrorResponse.json).toHaveBeenCalledWith({
+            message: errorMessage.message,
+          });
+          expect(mockedErrorResponse.status).toHaveBeenCalledWith(500);
+        });
       });
-
-      // it('Should SingIn Successfuly', () => {});
-
-      // it('Should SingOut Successfuly', () => {});
     });
   });
 });
