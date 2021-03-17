@@ -1,7 +1,7 @@
-const Mongoose = require("mongoose");
-const { v4 } = require("uuid");
+const Mongoose = require('mongoose');
+const { v4 } = require('uuid');
 
-const modelName = "heroes";
+const modelName = 'heroes';
 
 const heroesSchema = new Mongoose.Schema({
   _id: { type: String, required: true, default: v4 },

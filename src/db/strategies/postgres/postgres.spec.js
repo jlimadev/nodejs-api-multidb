@@ -1,8 +1,8 @@
-const Sequelize = require("sequelize");
-const Postgres = require("./postgres");
-const HeroesSchema = require("./schemas/heroesSchema");
+const Sequelize = require('sequelize');
+const Postgres = require('./postgres');
+const HeroesSchema = require('./schemas/heroesSchema');
 
-jest.mock("sequelize");
+jest.mock('sequelize');
 
 const sequelizeMock = () => {
   const defineModelMockedFunctions = {
@@ -39,11 +39,11 @@ const makeSut = async () => {
   const connection = Sut.connect();
   const schema = await Sut.defineModel(connection, HeroesSchema);
 
-  const mockUUID = "19cb7c30-da60-45e4-b6ea-0a1f889da84c";
-  const mockInput = { name: "any name", power: "any power" };
-  const mockUpdate = { name: "any other name", power: "any other power" };
+  const mockUUID = '19cb7c30-da60-45e4-b6ea-0a1f889da84c';
+  const mockInput = { name: 'any name', power: 'any power' };
+  const mockUpdate = { name: 'any other name', power: 'any other power' };
   const mockedReturnValue = { id: mockUUID, ...mockInput };
-  const errorMessage = "Any Error";
+  const errorMessage = 'Any Error';
 
   return {
     Sut,
@@ -59,9 +59,9 @@ const makeSut = async () => {
   };
 };
 
-describe("Postgres", () => {
-  describe("Postgres exports", () => {
-    it("Should be instance of object", async () => {
+describe('Postgres', () => {
+  describe('Postgres exports', () => {
+    it('Should be instance of object', async () => {
       const { Sut, connection, schema } = await makeSut();
       const postgres = new Sut(connection, schema);
 
@@ -77,8 +77,8 @@ describe("Postgres", () => {
     });
   });
 
-  describe("Postgres Constructor", () => {
-    it("Should throw a new error if connection is not informed", async () => {
+  describe('Postgres Constructor', () => {
+    it('Should throw a new error if connection is not informed', async () => {
       // Arrange
       const { Sut, schema } = await makeSut();
 
@@ -88,10 +88,10 @@ describe("Postgres", () => {
       };
 
       // Assert
-      expect(act).toThrow("You must inject the dependecies");
+      expect(act).toThrow('You must inject the dependecies');
     });
 
-    it("Should throw a new error if the schema is not informed", async () => {
+    it('Should throw a new error if the schema is not informed', async () => {
       // Arrange
       const { Sut, connection } = await makeSut();
 
@@ -101,10 +101,10 @@ describe("Postgres", () => {
       };
 
       // Assert
-      expect(act).toThrow("You must inject the dependecies");
+      expect(act).toThrow('You must inject the dependecies');
     });
 
-    it("Should return an object that contains the connection infos", async () => {
+    it('Should return an object that contains the connection infos', async () => {
       // Arrange
       const { Sut, connection, schema } = await makeSut();
 
@@ -114,13 +114,13 @@ describe("Postgres", () => {
 
       // Assert
       expect(postgres).toBeInstanceOf(Object);
-      expect(keys).toEqual(["_connection", "_schema"]);
+      expect(keys).toEqual(['_connection', '_schema']);
     });
   });
 
-  describe("Postgres Methods", () => {
-    describe("create", () => {
-      it("Should return an error if create rejects", async () => {
+  describe('Postgres Methods', () => {
+    describe('create', () => {
+      it('Should return an error if create rejects', async () => {
         // Arrange
         const {
           Sut,
@@ -133,20 +133,20 @@ describe("Postgres", () => {
         const postgres = new Sut(connection, schema);
 
         defineModelMockedFunctions.create = jest.fn(async () =>
-          Promise.reject(new Error(errorMessage))
+          Promise.reject(new Error(errorMessage)),
         );
 
         // Act
         const act = async () => {
-          await postgres.create({ item: "any" });
+          await postgres.create({ item: 'any' });
         };
 
         // Assert
-        await expect(act()).rejects.toThrow("Error creating data on postgres");
+        await expect(act()).rejects.toThrow('Error creating data on postgres');
         expect(defineModelMockedFunctions.create).toHaveBeenCalled();
       });
 
-      it("Should return an error if dont send the item", async () => {
+      it('Should return an error if dont send the item', async () => {
         // Arrange
         const {
           Sut,
@@ -164,12 +164,12 @@ describe("Postgres", () => {
 
         // Assert
         await expect(act()).rejects.toThrow(
-          "You must send the body to create the item"
+          'You must send the body to create the item',
         );
         expect(defineModelMockedFunctions.create).not.toHaveBeenCalled();
       });
 
-      it("Should return an object with the inserted data", async () => {
+      it('Should return an object with the inserted data', async () => {
         // Arrange
         const {
           Sut,
@@ -193,13 +193,13 @@ describe("Postgres", () => {
         expect(dataValues).toStrictEqual(mockedReturnValue);
         expect(defineModelMockedFunctions.create).toHaveBeenCalled();
         expect(defineModelMockedFunctions.create).toHaveBeenCalledWith(
-          mockInput
+          mockInput,
         );
       });
     });
 
-    describe("read", () => {
-      it("Should return an error if read rejects", async () => {
+    describe('read', () => {
+      it('Should return an error if read rejects', async () => {
         const {
           Sut,
           connection,
@@ -210,7 +210,7 @@ describe("Postgres", () => {
         const postgres = new Sut(connection, schema);
 
         defineModelMockedFunctions.findAll = jest.fn(() =>
-          Promise.reject(new Error(errorMessage))
+          Promise.reject(new Error(errorMessage)),
         );
 
         const act = async () => {
@@ -218,12 +218,12 @@ describe("Postgres", () => {
         };
 
         await expect(act).rejects.toThrow(
-          "Error on reading data from postgres"
+          'Error on reading data from postgres',
         );
         expect(defineModelMockedFunctions.findAll).toHaveBeenCalled();
       });
 
-      it("Should return an array with the result(s) of reading", async () => {
+      it('Should return an array with the result(s) of reading', async () => {
         const {
           Sut,
           connection,
@@ -253,7 +253,7 @@ describe("Postgres", () => {
         });
       });
 
-      it("Should return an empty array if nothing is found", async () => {
+      it('Should return an empty array if nothing is found', async () => {
         const {
           Sut,
           connection,
@@ -281,8 +281,8 @@ describe("Postgres", () => {
       });
     });
 
-    describe("update", () => {
-      it("Should return an error if update rejects", async () => {
+    describe('update', () => {
+      it('Should return an error if update rejects', async () => {
         const {
           Sut,
           connection,
@@ -295,18 +295,18 @@ describe("Postgres", () => {
         const postgres = new Sut(connection, schema);
 
         defineModelMockedFunctions.update = jest.fn(() =>
-          Promise.reject(new Error(errorMessage))
+          Promise.reject(new Error(errorMessage)),
         );
 
         const act = async () => {
           await postgres.update(mockUUID, mockUpdate);
         };
 
-        await expect(act).rejects.toThrow("Error on update data on postgres");
+        await expect(act).rejects.toThrow('Error on update data on postgres');
         expect(defineModelMockedFunctions.update).toHaveBeenCalled();
       });
 
-      it("Should return an error if is not an UUID", async () => {
+      it('Should return an error if is not an UUID', async () => {
         const {
           Sut,
           connection,
@@ -318,14 +318,14 @@ describe("Postgres", () => {
         const postgres = new Sut(connection, schema);
 
         const act = async () => {
-          await postgres.update("InvalidUUID", mockUpdate);
+          await postgres.update('InvalidUUID', mockUpdate);
         };
 
-        await expect(act).rejects.toThrow("This id is not an UUID");
+        await expect(act).rejects.toThrow('This id is not an UUID');
         expect(defineModelMockedFunctions.update).not.toHaveBeenCalled();
       });
 
-      it("Should return an error if id is missing", async () => {
+      it('Should return an error if id is missing', async () => {
         const {
           Sut,
           connection,
@@ -340,12 +340,12 @@ describe("Postgres", () => {
         };
 
         await expect(act).rejects.toThrow(
-          "You must inform the id and the item"
+          'You must inform the id and the item',
         );
         expect(defineModelMockedFunctions.update).not.toHaveBeenCalled();
       });
 
-      it("Should return an error if body is missing", async () => {
+      it('Should return an error if body is missing', async () => {
         const {
           Sut,
           connection,
@@ -360,12 +360,12 @@ describe("Postgres", () => {
         };
 
         await expect(act).rejects.toThrow(
-          "You must inform the id and the item"
+          'You must inform the id and the item',
         );
         expect(defineModelMockedFunctions.update).not.toHaveBeenCalled();
       });
 
-      it("Should return [ 1 ] if updated successfuly", async () => {
+      it('Should return [ 1 ] if updated successfuly', async () => {
         const {
           Sut,
           connection,
@@ -377,7 +377,7 @@ describe("Postgres", () => {
         const postgres = new Sut(connection, schema);
         const expectedUpdatedResponse = [{ id: mockUUID, ...mockUpdate }];
 
-        defineModelMockedFunctions.update = jest.fn().mockReturnValue("[ 1 ]");
+        defineModelMockedFunctions.update = jest.fn().mockReturnValue('[ 1 ]');
         defineModelMockedFunctions.findAll = jest
           .fn()
           .mockReturnValue(expectedUpdatedResponse);
@@ -385,19 +385,19 @@ describe("Postgres", () => {
         const result = await postgres.update(mockUUID, mockUpdate);
         const readUpdatedValue = await postgres.read(mockUUID);
 
-        expect(result).toStrictEqual("[ 1 ]");
+        expect(result).toStrictEqual('[ 1 ]');
 
         expect(readUpdatedValue).toStrictEqual(expectedUpdatedResponse);
         expect(Array.isArray(readUpdatedValue)).toBe(true);
 
         expect(defineModelMockedFunctions.update).toHaveBeenCalled();
         expect(
-          defineModelMockedFunctions.update
+          defineModelMockedFunctions.update,
         ).toHaveBeenCalledWith(mockUpdate, { where: { id: mockUUID } });
         expect(defineModelMockedFunctions.findAll).toHaveBeenCalled();
       });
 
-      it("Should return [ 0 ] if try to update an non existing Id", async () => {
+      it('Should return [ 0 ] if try to update an non existing Id', async () => {
         const {
           Sut,
           connection,
@@ -408,21 +408,21 @@ describe("Postgres", () => {
         } = await makeSut();
         const postgres = new Sut(connection, schema);
 
-        defineModelMockedFunctions.update = jest.fn().mockReturnValue("[ 0 ]");
+        defineModelMockedFunctions.update = jest.fn().mockReturnValue('[ 0 ]');
 
         const result = await postgres.update(mockUUID, mockUpdate);
 
-        expect(result).toStrictEqual("[ 0 ]");
+        expect(result).toStrictEqual('[ 0 ]');
 
         expect(defineModelMockedFunctions.update).toHaveBeenCalled();
         expect(
-          defineModelMockedFunctions.update
+          defineModelMockedFunctions.update,
         ).toHaveBeenCalledWith(mockUpdate, { where: { id: mockUUID } });
       });
     });
 
-    describe("delete", () => {
-      it("Should return an error if delete fails or rejects", async () => {
+    describe('delete', () => {
+      it('Should return an error if delete fails or rejects', async () => {
         const {
           Sut,
           connection,
@@ -434,32 +434,32 @@ describe("Postgres", () => {
         const postgres = new Sut(connection, schema);
 
         defineModelMockedFunctions.destroy = jest.fn(() =>
-          Promise.reject(new Error(errorMessage))
+          Promise.reject(new Error(errorMessage)),
         );
 
         const act = async () => {
           await postgres.delete(mockUUID);
         };
 
-        await expect(act).rejects.toThrow("Error on delete data on postgres");
+        await expect(act).rejects.toThrow('Error on delete data on postgres');
         expect(defineModelMockedFunctions.destroy).toHaveBeenCalled();
         expect(defineModelMockedFunctions.destroy).toHaveBeenCalledWith({
           where: { id: mockUUID },
         });
       });
 
-      it("Should return an error if is not an UUID", async () => {
+      it('Should return an error if is not an UUID', async () => {
         const { Sut, connection, schema } = await makeSut();
         const postgres = new Sut(connection, schema);
 
         const act = async () => {
-          await postgres.delete("InvalidUUID");
+          await postgres.delete('InvalidUUID');
         };
 
-        await expect(act).rejects.toThrow("This id is not an UUID");
+        await expect(act).rejects.toThrow('This id is not an UUID');
       });
 
-      it("Should return 1 if deleted successfuly (when send id)", async () => {
+      it('Should return 1 if deleted successfuly (when send id)', async () => {
         const {
           Sut,
           connection,
@@ -480,7 +480,7 @@ describe("Postgres", () => {
         });
       });
 
-      it("Should return 0 if nothing is deleted", async () => {
+      it('Should return 0 if nothing is deleted', async () => {
         const {
           Sut,
           connection,
@@ -501,7 +501,7 @@ describe("Postgres", () => {
         });
       });
 
-      it("Should delete everything if no id is sent", async () => {
+      it('Should delete everything if no id is sent', async () => {
         const {
           Sut,
           connection,
@@ -512,11 +512,11 @@ describe("Postgres", () => {
 
         defineModelMockedFunctions.destroy = jest
           .fn()
-          .mockReturnValue("anyDeleteCount");
+          .mockReturnValue('anyDeleteCount');
 
         const result = await postgres.delete();
 
-        expect(result).toStrictEqual("anyDeleteCount");
+        expect(result).toStrictEqual('anyDeleteCount');
         expect(defineModelMockedFunctions.destroy).toHaveBeenCalled();
         expect(defineModelMockedFunctions.destroy).toHaveBeenCalledWith({
           where: {},
@@ -524,8 +524,8 @@ describe("Postgres", () => {
       });
     });
 
-    describe("isConnected", () => {
-      it("should return an error if authenticate throws an error", async () => {
+    describe('isConnected', () => {
+      it('should return an error if authenticate throws an error', async () => {
         const {
           Sut,
           connection,
@@ -536,16 +536,16 @@ describe("Postgres", () => {
         const postgres = new Sut(connection, schema);
 
         sequelizeMockedFunctions.authenticate = jest.fn(() =>
-          Promise.reject(new Error(errorMessage))
+          Promise.reject(new Error(errorMessage)),
         );
 
         const act = async () => postgres.isConnected();
 
-        expect(act).rejects.toThrow("Error to authenticate on postgres");
+        expect(act).rejects.toThrow('Error to authenticate on postgres');
         expect(sequelizeMockedFunctions.authenticate).toHaveBeenCalled();
       });
 
-      it("should return true if authenticate", async () => {
+      it('should return true if authenticate', async () => {
         const {
           Sut,
           connection,
@@ -562,25 +562,25 @@ describe("Postgres", () => {
     });
   });
 
-  describe("Satic Methods", () => {
-    describe("connect", () => {
-      it("should return an error if connect fails", async () => {
+  describe('Satic Methods', () => {
+    describe('connect', () => {
+      it('should return an error if connect fails', async () => {
         const { Sut, errorMessage } = await makeSut();
 
         Sequelize.mockImplementationOnce(
           jest.fn(() => {
             throw new Error(errorMessage);
-          })
+          }),
         );
 
         const act = () => {
           Sut.connect();
         };
 
-        expect(act).toThrow("Error on connect with postgres");
+        expect(act).toThrow('Error on connect with postgres');
       });
 
-      it("should connect successfuly and return the connection", async () => {
+      it('should connect successfuly and return the connection', async () => {
         const { Sut, sequelizeMockedFunctions } = await makeSut();
 
         const result = Sut.connect();
@@ -589,8 +589,8 @@ describe("Postgres", () => {
       });
     });
 
-    describe("disconnect", () => {
-      it("Should throw an error if fails on close connection", async () => {
+    describe('disconnect', () => {
+      it('Should throw an error if fails on close connection', async () => {
         const {
           Sut,
           connection,
@@ -606,7 +606,7 @@ describe("Postgres", () => {
           Sut.disconnect(connection);
         };
 
-        expect(act).toThrow("Error on close connection with postgres");
+        expect(act).toThrow('Error on close connection with postgres');
         expect(sequelizeMockedFunctions.close).toHaveBeenCalled();
       });
 
@@ -617,11 +617,11 @@ describe("Postgres", () => {
           Sut.disconnect();
         };
 
-        expect(act).toThrow("You must inform the connection to be closed");
+        expect(act).toThrow('You must inform the connection to be closed');
         expect(sequelizeMockedFunctions.close).not.toHaveBeenCalled();
       });
 
-      it("Should rerturn true on close connection successfuly", async () => {
+      it('Should rerturn true on close connection successfuly', async () => {
         const { Sut, connection, sequelizeMockedFunctions } = await makeSut();
 
         sequelizeMockedFunctions.close = jest.fn(() => true);
@@ -633,7 +633,7 @@ describe("Postgres", () => {
       });
     });
 
-    describe("defineModel", () => {
+    describe('defineModel', () => {
       it("should throw an error if don't pass the connection", async () => {
         const { Sut, sequelizeMockedFunctions, schema } = await makeSut();
 
@@ -643,7 +643,7 @@ describe("Postgres", () => {
         };
 
         await expect(act).rejects.toThrow(
-          "You must inform the connection and schema"
+          'You must inform the connection and schema',
         );
         expect(sequelizeMockedFunctions.define).not.toHaveBeenCalled();
       });
@@ -657,12 +657,12 @@ describe("Postgres", () => {
         };
 
         await expect(act).rejects.toThrow(
-          "You must inform the connection and schema"
+          'You must inform the connection and schema',
         );
         expect(sequelizeMockedFunctions.define).not.toHaveBeenCalled();
       });
 
-      it("should throw an error if define returns any error", async () => {
+      it('should throw an error if define returns any error', async () => {
         const {
           Sut,
           sequelizeMockedFunctions,
@@ -681,13 +681,13 @@ describe("Postgres", () => {
         };
 
         await expect(act).rejects.toThrow(
-          "Error on define model to postgres/sequelize"
+          'Error on define model to postgres/sequelize',
         );
         expect(sequelizeMockedFunctions.define).toHaveBeenCalled();
         expect(defineModelMockedFunctions.sync).toHaveBeenCalled();
       });
 
-      it("should return the model on success", async () => {
+      it('should return the model on success', async () => {
         const {
           Sut,
           sequelizeMockedFunctions,
@@ -708,7 +708,7 @@ describe("Postgres", () => {
         expect(sequelizeMockedFunctions.define).toHaveBeenCalledWith(
           schema.name,
           schema.schema,
-          schema.options
+          schema.options,
         );
       });
     });

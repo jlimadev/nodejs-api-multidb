@@ -1,9 +1,10 @@
+const request = require('supertest');
 const defineEnvironment = require('../../utils/define-environment');
+
 const env = process.env.NODE_ENV || 'devl';
 defineEnvironment(env);
 
 const authRoutes = require('.');
-const request = require('supertest');
 const { app, mongoConnection } = require('../..');
 
 const makeSut = () => {

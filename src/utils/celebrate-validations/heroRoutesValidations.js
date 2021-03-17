@@ -1,4 +1,4 @@
-const { celebrate, Segments, Joi } = require("celebrate");
+const { celebrate, Segments, Joi } = require('celebrate');
 
 const heroRoutesValidations = () => {
   const celebrateValidateGet = () =>

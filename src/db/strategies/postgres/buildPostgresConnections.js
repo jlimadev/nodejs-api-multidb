@@ -1,17 +1,17 @@
-const ContextStrategy = require("../context/ContextStrategy");
-const Postgres = require("./postgres");
-const authPostgresSchema = require("./schemas/authSchema");
+const ContextStrategy = require('../context/ContextStrategy');
+const Postgres = require('./postgres');
+const authPostgresSchema = require('./schemas/authSchema');
 
 module.exports = (() => {
   const authPostgresConnection = Postgres.connect();
   const authPostgresModel = Postgres.defineModel(
     authPostgresConnection,
-    authPostgresSchema
+    authPostgresSchema,
   );
 
   const authPostgresInstance = new Postgres(
     authPostgresConnection,
-    authPostgresModel
+    authPostgresModel,
   );
 
   const authPostgresStrategy = new ContextStrategy(authPostgresInstance);

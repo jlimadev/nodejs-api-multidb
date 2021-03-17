@@ -1,7 +1,7 @@
-const Mongoose = require("mongoose");
-const { v4 } = require("uuid");
+const Mongoose = require('mongoose');
+const { v4 } = require('uuid');
 
-const modelName = "auth";
+const modelName = 'auth';
 
 const authSchema = new Mongoose.Schema(
   {
@@ -9,7 +9,7 @@ const authSchema = new Mongoose.Schema(
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
   },
-  { strict: false }
+  { strict: false },
 );
 
 const authModel = Mongoose.models[modelName]

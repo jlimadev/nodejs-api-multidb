@@ -1,9 +1,9 @@
-const { Router } = require("express");
+const { Router } = require('express');
 
 const defineHeroRoutes = (
   checkAuthentication,
   heroRoutesController,
-  heroRoutesValidations
+  heroRoutesValidations,
 ) => {
   try {
     const heroRouter = Router();
@@ -18,27 +18,27 @@ const defineHeroRoutes = (
     heroRouter.use(checkAuthentication);
 
     heroRouter.get(
-      "/",
+      '/',
       celebrateValidateGet(),
-      heroRoutesController.list.bind(heroRoutesController)
+      heroRoutesController.list.bind(heroRoutesController),
     );
 
     heroRouter.post(
-      "/",
+      '/',
       celebrateValidatePost(),
-      heroRoutesController.create.bind(heroRoutesController)
+      heroRoutesController.create.bind(heroRoutesController),
     );
 
     heroRouter.patch(
-      "/:id",
+      '/:id',
       celebrateValidatePatch(),
-      heroRoutesController.update.bind(heroRoutesController)
+      heroRoutesController.update.bind(heroRoutesController),
     );
 
     heroRouter.delete(
-      "/:id?",
+      '/:id?',
       celebrateValidateDelete(),
-      heroRoutesController.delete.bind(heroRoutesController)
+      heroRoutesController.delete.bind(heroRoutesController),
     );
 
     return heroRouter;

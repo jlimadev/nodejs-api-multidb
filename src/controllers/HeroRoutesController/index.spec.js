@@ -1,11 +1,11 @@
-const HeroRoutesController = require(".");
+const HeroRoutesController = require('.');
 
 const makeSut = () => {
   const Sut = HeroRoutesController;
-  const errorMessage = { message: "any error" };
+  const errorMessage = { message: 'any error' };
   const errorResponse = { statusCode: 500, error: errorMessage };
 
-  const bodyResponse = { name: "any name", power: "any power" };
+  const bodyResponse = { name: 'any name', power: 'any power' };
   const updateResponse = { n: 1, nModified: 1, ok: 1 };
   const deleteResponse = { n: 1, ok: 1, deletedCount: 1 };
 
@@ -16,8 +16,8 @@ const makeSut = () => {
 
   const notFoundResponse = {
     statusCode: 404,
-    error: "Not Found",
-    message: "Hero not found",
+    error: 'Not Found',
+    message: 'Hero not found',
   };
 
   const mockedDatabase = {
@@ -31,13 +31,13 @@ const makeSut = () => {
 
   const mockedRequest = {
     query: {
-      name: "any",
+      name: 'any',
       skip: 0,
       limit: 10,
     },
     body: bodyResponse,
     params: {
-      id: "anyId",
+      id: 'anyId',
     },
   };
 
@@ -72,19 +72,19 @@ const makeSut = () => {
   };
 };
 
-describe("HeroRoutesController test suit", () => {
+describe('HeroRoutesController test suit', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  describe("Success cases", () => {
-    it("Should create an instance of HeroRoutesController", async () => {
+  describe('Success cases', () => {
+    it('Should create an instance of HeroRoutesController', async () => {
       const { Sut, mockedDatabase } = makeSut();
 
       const heroRoutesController = new Sut(mockedDatabase);
       expect(heroRoutesController).toBeInstanceOf(HeroRoutesController);
     });
 
-    it("Should list successfuly", async () => {
+    it('Should list successfuly', async () => {
       const {
         Sut,
         mockedDatabase,
@@ -96,7 +96,7 @@ describe("HeroRoutesController test suit", () => {
 
       const response = await heroRoutesController.list(
         mockedRequest,
-        mockedResponse
+        mockedResponse,
       );
 
       expect(response).toStrictEqual(successResponse);
@@ -104,7 +104,7 @@ describe("HeroRoutesController test suit", () => {
       expect(mockedResponse.status).toHaveBeenCalledWith(200);
     });
 
-    it("Should list all successfuly", async () => {
+    it('Should list all successfuly', async () => {
       const {
         Sut,
         mockedDatabase,
@@ -118,7 +118,7 @@ describe("HeroRoutesController test suit", () => {
 
       const response = await heroRoutesController.list(
         mockedRequest,
-        mockedResponse
+        mockedResponse,
       );
 
       expect(response).toStrictEqual(successResponse);
@@ -126,7 +126,7 @@ describe("HeroRoutesController test suit", () => {
       expect(mockedResponse.status).toHaveBeenCalledWith(200);
     });
 
-    it("Should create successfuly", async () => {
+    it('Should create successfuly', async () => {
       const {
         Sut,
         mockedDatabase,
@@ -139,7 +139,7 @@ describe("HeroRoutesController test suit", () => {
       successResponse.statusCode = 201;
       const response = await heroRoutesController.create(
         mockedRequest,
-        mockedResponse
+        mockedResponse,
       );
 
       expect(response).toStrictEqual(successResponse);
@@ -147,7 +147,7 @@ describe("HeroRoutesController test suit", () => {
       expect(mockedResponse.status).toHaveBeenCalledWith(201);
     });
 
-    it("Should update successfuly", async () => {
+    it('Should update successfuly', async () => {
       const {
         Sut,
         mockedDatabase,
@@ -162,7 +162,7 @@ describe("HeroRoutesController test suit", () => {
 
       const response = await heroRoutesController.update(
         mockedRequest,
-        mockedResponse
+        mockedResponse,
       );
 
       expect(response).toStrictEqual(successResponse);
@@ -170,7 +170,7 @@ describe("HeroRoutesController test suit", () => {
       expect(mockedResponse.status).toHaveBeenCalledWith(200);
     });
 
-    it("Should delete successfuly", async () => {
+    it('Should delete successfuly', async () => {
       const {
         Sut,
         mockedDatabase,
@@ -185,7 +185,7 @@ describe("HeroRoutesController test suit", () => {
 
       const response = await heroRoutesController.delete(
         mockedRequest,
-        mockedResponse
+        mockedResponse,
       );
 
       expect(response).toStrictEqual(successResponse);
@@ -194,8 +194,8 @@ describe("HeroRoutesController test suit", () => {
     });
   });
 
-  describe("Failure cases", () => {
-    it("Should return 404 - [Not Found] if read dont find any item", async () => {
+  describe('Failure cases', () => {
+    it('Should return 404 - [Not Found] if read dont find any item', async () => {
       const {
         Sut,
         mockedDatabase,
@@ -206,18 +206,18 @@ describe("HeroRoutesController test suit", () => {
       const heroRoutesController = new Sut(mockedDatabase);
 
       mockedDatabase.db.read = jest.fn().mockReturnValue([]);
-      mockedRequest.query.name = "AnyInvalid";
+      mockedRequest.query.name = 'AnyInvalid';
       mockedRequest.body = [];
 
       const response = await heroRoutesController.list(
         mockedRequest,
-        mockedNotFoundResponse
+        mockedNotFoundResponse,
       );
 
       expect(response).toStrictEqual(notFoundResponse);
       expect(mockedNotFoundResponse.status).toHaveBeenCalledWith(404);
       expect(mockedNotFoundResponse.json).toHaveBeenCalledWith(
-        notFoundResponse
+        notFoundResponse,
       );
     });
 
@@ -236,7 +236,7 @@ describe("HeroRoutesController test suit", () => {
       const heroRoutesController = new Sut(mockedDatabase);
       const response = await heroRoutesController.list(
         mockedRequest,
-        mockedErrorResponse
+        mockedErrorResponse,
       );
 
       expect(response).toStrictEqual(errorResponse);
@@ -261,7 +261,7 @@ describe("HeroRoutesController test suit", () => {
 
       const response = await heroRoutesController.create(
         mockedRequest,
-        mockedErrorResponse
+        mockedErrorResponse,
       );
 
       expect(response).toStrictEqual(errorResponse);
@@ -286,7 +286,7 @@ describe("HeroRoutesController test suit", () => {
 
       const response = await heroRoutesController.update(
         mockedRequest,
-        mockedErrorResponse
+        mockedErrorResponse,
       );
 
       expect(response).toStrictEqual(errorResponse);
@@ -311,7 +311,7 @@ describe("HeroRoutesController test suit", () => {
 
       const response = await heroRoutesController.delete(
         mockedRequest,
-        mockedErrorResponse
+        mockedErrorResponse,
       );
 
       expect(response).toStrictEqual(errorResponse);

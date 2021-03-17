@@ -1,4 +1,4 @@
-const { verify } = require("jsonwebtoken");
+const { verify } = require('jsonwebtoken');
 
 const checkAuthentication = (request, response, next) => {
   const authHeader = request.headers.authorization;
@@ -6,13 +6,13 @@ const checkAuthentication = (request, response, next) => {
   if (!authHeader) {
     const error = {
       statusCode: 401,
-      error: "Unauthorized",
-      message: "JWT token is missing",
+      error: 'Unauthorized',
+      message: 'JWT token is missing',
     };
     return response.status(error.statusCode).send(error);
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.split(' ')[1];
   const secret = process.env.JWT_SECRET;
 
   try {
@@ -21,8 +21,8 @@ const checkAuthentication = (request, response, next) => {
   } catch (err) {
     const error = {
       statusCode: 401,
-      error: "Unauthorized",
-      message: "Invalid JWT Token",
+      error: 'Unauthorized',
+      message: 'Invalid JWT Token',
     };
     return response.status(error.statusCode).send(error);
   }

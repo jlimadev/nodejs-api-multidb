@@ -1,15 +1,15 @@
-const Mongoose = require("mongoose");
-const MongoDb = require("./mongodb");
+const Mongoose = require('mongoose');
+const MongoDb = require('./mongodb');
 
-jest.mock("mongoose");
+jest.mock('mongoose');
 
 const mongooseMock = () => {
   const STATES = {
-    0: "disconnected",
-    1: "connected",
-    2: "connecting",
-    3: "disconnecting",
-    99: "uninitialized",
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting',
+    99: 'uninitialized',
   };
 
   const mockFind = {
@@ -27,8 +27,8 @@ const mongooseMock = () => {
   };
 
   const mockedConnection = {
-    model: { heroes: "any" },
-    models: { heroes: "any" },
+    model: { heroes: 'any' },
+    models: { heroes: 'any' },
     Schema: jest.fn(),
     states: STATES,
   };
@@ -46,15 +46,15 @@ const makeSut = () => {
   const connection = MongoDb.connect();
   const schema = mockedModelsFn;
 
-  const errorMessage = "Any error";
-  const mockUUID = "19cb7c30-da60-45e4-b6ea-0a1f889da84c";
+  const errorMessage = 'Any error';
+  const mockUUID = '19cb7c30-da60-45e4-b6ea-0a1f889da84c';
   const mockInput = {
-    name: "any name",
-    power: "any power",
-    createdAt: "2021-02-18T21:18:25.429Z",
+    name: 'any name',
+    power: 'any power',
+    createdAt: '2021-02-18T21:18:25.429Z',
     __v: 0,
   };
-  const mockUpdate = { name: "any other name", power: "any other power" };
+  const mockUpdate = { name: 'any other name', power: 'any other power' };
   const mockReturnValue = { _id: mockUUID, ...mockInput };
 
   const mockGenerateUuid = jest.fn().mockReturnValue(mockUUID);
@@ -75,16 +75,16 @@ const makeSut = () => {
   };
 };
 
-describe("MongoDB", () => {
-  describe("MongoDB exports and instances", () => {
-    it("Should be instance of Object", () => {
+describe('MongoDB', () => {
+  describe('MongoDB exports and instances', () => {
+    it('Should be instance of Object', () => {
       const { Sut, connection, schema, mockGenerateUuid } = makeSut();
       const mongodb = new Sut(connection, schema, mockGenerateUuid);
 
       expect(mongodb).toBeInstanceOf(Object);
     });
 
-    it("Should export the functions", () => {
+    it('Should export the functions', () => {
       const { Sut, connection, schema, mockGenerateUuid } = makeSut();
       const mongodb = new Sut(connection, schema, mockGenerateUuid);
 
@@ -98,52 +98,52 @@ describe("MongoDB", () => {
     });
   });
 
-  describe("MongoDB Constructor", () => {
-    it("Should throw an error if connection is not informed", () => {
+  describe('MongoDB Constructor', () => {
+    it('Should throw an error if connection is not informed', () => {
       const { Sut, schema, mockGenerateUuid } = makeSut();
 
       const act = () => {
         new Sut(undefined, schema, mockGenerateUuid);
       };
 
-      expect(act).toThrow("You must inject the dependecies");
+      expect(act).toThrow('You must inject the dependecies');
     });
 
-    it("Should throw an error if schema is not informed", () => {
+    it('Should throw an error if schema is not informed', () => {
       const { Sut, connection, mockGenerateUuid } = makeSut();
 
       const act = () => {
         new Sut(connection, undefined, mockGenerateUuid);
       };
 
-      expect(act).toThrow("You must inject the dependecies");
+      expect(act).toThrow('You must inject the dependecies');
     });
 
-    it("Should throw an error if generateUuid is not informed", () => {
+    it('Should throw an error if generateUuid is not informed', () => {
       const { Sut, connection, schema } = makeSut();
 
       const act = () => {
         new Sut(connection, schema, undefined);
       };
 
-      expect(act).toThrow("You must inject the dependecies");
+      expect(act).toThrow('You must inject the dependecies');
     });
 
-    it("Should return an object containning the connection and the schema", () => {
+    it('Should return an object containning the connection and the schema', () => {
       const { Sut, connection, schema, mockGenerateUuid } = makeSut();
 
       const mongodb = new Sut(connection, schema, mockGenerateUuid);
       const keys = Object.keys(mongodb);
 
       expect(mongodb).toBeInstanceOf(Object);
-      expect(keys).toStrictEqual(["_connection", "_schema", "_generateUuid"]);
+      expect(keys).toStrictEqual(['_connection', '_schema', '_generateUuid']);
     });
   });
 
-  describe("MongoDB Methods", () => {
-    describe("CREATE TEST SUIT", () => {
-      describe("Success cases", () => {
-        it("Should CREATE the item on mongoDB", async () => {
+  describe('MongoDB Methods', () => {
+    describe('CREATE TEST SUIT', () => {
+      describe('Success cases', () => {
+        it('Should CREATE the item on mongoDB', async () => {
           const {
             Sut,
             connection,
@@ -164,8 +164,8 @@ describe("MongoDB", () => {
         });
       });
 
-      describe("Failure cases", () => {
-        it("Should throw an error if call the method without the item", async () => {
+      describe('Failure cases', () => {
+        it('Should throw an error if call the method without the item', async () => {
           const {
             Sut,
             connection,
@@ -181,11 +181,11 @@ describe("MongoDB", () => {
 
           expect(mockedModelsFn.create).not.toHaveBeenCalled();
           await expect(act).rejects.toThrow(
-            "You must inform the item to be inserted"
+            'You must inform the item to be inserted',
           );
         });
 
-        it("Should throw an error if mongo create rejects", async () => {
+        it('Should throw an error if mongo create rejects', async () => {
           const {
             Sut,
             connection,
@@ -198,7 +198,7 @@ describe("MongoDB", () => {
           const mongo = new Sut(connection, schema, mockGenerateUuid);
 
           mockedModelsFn.create = jest.fn(() =>
-            Promise.reject(new Error(errorMessage))
+            Promise.reject(new Error(errorMessage)),
           );
 
           const act = async () => {
@@ -211,9 +211,9 @@ describe("MongoDB", () => {
       });
     });
 
-    describe("READ TEST SUIT", () => {
-      describe("Success cases", () => {
-        it("Should READ and return an array with the results", async () => {
+    describe('READ TEST SUIT', () => {
+      describe('Success cases', () => {
+        it('Should READ and return an array with the results', async () => {
           const {
             Sut,
             connection,
@@ -238,8 +238,8 @@ describe("MongoDB", () => {
         });
       });
 
-      describe("Failure cases", () => {
-        it("Should return an error if read fails/throw", async () => {
+      describe('Failure cases', () => {
+        it('Should return an error if read fails/throw', async () => {
           const {
             Sut,
             connection,
@@ -254,7 +254,7 @@ describe("MongoDB", () => {
           const searchItem = { _id: mockUUID };
 
           mockFind.limit = jest.fn(() =>
-            Promise.reject(new Error(errorMessage))
+            Promise.reject(new Error(errorMessage)),
           );
 
           const act = async () => {
@@ -269,9 +269,9 @@ describe("MongoDB", () => {
       });
     });
 
-    describe("UPDATE TEST SUIT", () => {
-      describe("Success cases", () => {
-        it("Should UPDATE successfuly and result a summary of transaction", async () => {
+    describe('UPDATE TEST SUIT', () => {
+      describe('Success cases', () => {
+        it('Should UPDATE successfuly and result a summary of transaction', async () => {
           const {
             Sut,
             connection,
@@ -292,11 +292,11 @@ describe("MongoDB", () => {
           expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
             { _id: mockUUID },
             { $set: mockUpdate },
-            {}
+            {},
           );
         });
 
-        it("Should not UPDATE if id does not exists and must show a summary of transaction", async () => {
+        it('Should not UPDATE if id does not exists and must show a summary of transaction', async () => {
           const {
             Sut,
             connection,
@@ -317,11 +317,11 @@ describe("MongoDB", () => {
           expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
             { _id: mockUUID },
             { $set: mockUpdate },
-            {}
+            {},
           );
         });
 
-        it("Should UPSERT successfuly and result a summary of transaction", async () => {
+        it('Should UPSERT successfuly and result a summary of transaction', async () => {
           const {
             Sut,
             connection,
@@ -353,13 +353,13 @@ describe("MongoDB", () => {
               rawResult: true,
               setDefaultsOnInsert: true,
               upsert: true,
-            }
+            },
           );
         });
       });
 
-      describe("Failure cases", () => {
-        it("Should throw an error if uuid is not sent", async () => {
+      describe('Failure cases', () => {
+        it('Should throw an error if uuid is not sent', async () => {
           const {
             Sut,
             connection,
@@ -375,12 +375,12 @@ describe("MongoDB", () => {
           };
 
           await expect(act).rejects.toThrow(
-            "You must inform the UUID to be updated"
+            'You must inform the UUID to be updated',
           );
           expect(mockedModelsFn.updateOne).not.toHaveBeenCalled();
         });
 
-        it("Should throw an error if item is not sent", async () => {
+        it('Should throw an error if item is not sent', async () => {
           const {
             Sut,
             connection,
@@ -396,12 +396,12 @@ describe("MongoDB", () => {
           };
 
           await expect(act).rejects.toThrow(
-            "You must inform the item to be updated"
+            'You must inform the item to be updated',
           );
           expect(mockedModelsFn.updateOne).not.toHaveBeenCalled();
         });
 
-        it("Should fail if any error happens on updateOne from mongooose", async () => {
+        it('Should fail if any error happens on updateOne from mongooose', async () => {
           const {
             Sut,
             connection,
@@ -415,7 +415,7 @@ describe("MongoDB", () => {
           const mongo = new Sut(connection, schema, mockGenerateUuid);
 
           mockedModelsFn.updateOne = jest.fn(() =>
-            Promise.reject(new Error(errorMessage))
+            Promise.reject(new Error(errorMessage)),
           );
 
           const act = async () => {
@@ -426,15 +426,15 @@ describe("MongoDB", () => {
           expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
             { _id: mockUUID },
             { $set: mockUpdate },
-            {}
+            {},
           );
         });
       });
     });
 
-    describe("DELETE TEST SUIT", () => {
-      describe("Success cases", () => {
-        it("should DELETE based on id using deleteOne from mongoose", async () => {
+    describe('DELETE TEST SUIT', () => {
+      describe('Success cases', () => {
+        it('should DELETE based on id using deleteOne from mongoose', async () => {
           const {
             Sut,
             connection,
@@ -457,7 +457,7 @@ describe("MongoDB", () => {
           });
         });
 
-        it("should DELETE all using deleteMany from mongoose", async () => {
+        it('should DELETE all using deleteMany from mongoose', async () => {
           const {
             Sut,
             connection,
@@ -478,8 +478,8 @@ describe("MongoDB", () => {
         });
       });
 
-      describe("Failure cases", () => {
-        it("should return an error if deleteOne from mongoose fails", async () => {
+      describe('Failure cases', () => {
+        it('should return an error if deleteOne from mongoose fails', async () => {
           const {
             Sut,
             connection,
@@ -492,7 +492,7 @@ describe("MongoDB", () => {
           const mongo = new Sut(connection, schema, mockGenerateUuid);
 
           mockedModelsFn.deleteOne = jest.fn(() =>
-            Promise.reject(new Error(errorMessage))
+            Promise.reject(new Error(errorMessage)),
           );
 
           const act = async () => {
@@ -505,7 +505,7 @@ describe("MongoDB", () => {
           });
         });
 
-        it("should return an error if deleteMany from mongoose fails", async () => {
+        it('should return an error if deleteMany from mongoose fails', async () => {
           const {
             Sut,
             connection,
@@ -517,7 +517,7 @@ describe("MongoDB", () => {
           const mongo = new Sut(connection, schema, mockGenerateUuid);
 
           mockedModelsFn.deleteMany = jest.fn(() =>
-            Promise.reject(new Error(errorMessage))
+            Promise.reject(new Error(errorMessage)),
           );
 
           const act = async () => {
@@ -531,9 +531,9 @@ describe("MongoDB", () => {
     });
   });
 
-  describe("MongoDB Static Methods", () => {
-    describe("disconnect", () => {
-      it("Should throw an error if fails on close connection", async () => {
+  describe('MongoDB Static Methods', () => {
+    describe('disconnect', () => {
+      it('Should throw an error if fails on close connection', async () => {
         const { Sut, errorMessage } = makeSut();
         Mongoose.disconnect = jest.fn(() => {
           throw new Error(errorMessage);
@@ -547,7 +547,7 @@ describe("MongoDB", () => {
         expect(Mongoose.disconnect).toHaveBeenCalled();
       });
 
-      it("Should close the connection", async () => {
+      it('Should close the connection', async () => {
         const { Sut } = makeSut();
 
         const result = await Sut.disconnect();
@@ -557,8 +557,8 @@ describe("MongoDB", () => {
       });
     });
 
-    describe("connect", () => {
-      it("Should throw an error if connect method fails", () => {
+    describe('connect', () => {
+      it('Should throw an error if connect method fails', () => {
         const { Sut, errorMessage } = makeSut();
 
         Mongoose.connect = jest.fn(() => {
@@ -573,7 +573,7 @@ describe("MongoDB", () => {
         expect(Mongoose.connect).toHaveBeenCalled();
       });
 
-      it("Should return the connection object", () => {
+      it('Should return the connection object', () => {
         const { Sut, mockedConnection } = makeSut();
         const result = Sut.connect();
 

@@ -1,4 +1,4 @@
-const { celebrate, Joi, Segments } = require("celebrate");
+const { celebrate, Joi, Segments } = require('celebrate');
 
 const authRoutesValidations = () => {
   const celebrateValidateSignIn = () =>
@@ -15,7 +15,7 @@ const authRoutesValidations = () => {
         username: Joi.string().required(),
         password: Joi.string().required(),
         passwordConfirmation: Joi.string()
-          .valid(Joi.ref("password"))
+          .valid(Joi.ref('password'))
           .required(),
       }),
     });

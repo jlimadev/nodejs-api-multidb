@@ -1,8 +1,8 @@
-const { v4 } = require("uuid");
-const ContextStrategy = require("../context/ContextStrategy");
-const MongoDB = require("./mongodb");
-const mongoHeroesSchema = require("./schemas/heroesSchema");
-const mongoAuthSchema = require("./schemas/authSchema");
+const { v4 } = require('uuid');
+const ContextStrategy = require('../context/ContextStrategy');
+const MongoDB = require('./mongodb');
+const mongoHeroesSchema = require('./schemas/heroesSchema');
+const mongoAuthSchema = require('./schemas/authSchema');
 
 module.exports = (() => {
   const mongoConnection = MongoDB.connect();
@@ -12,7 +12,7 @@ module.exports = (() => {
   const heroesMongoInstance = new MongoDB(
     mongoConnection,
     mongoHeroesSchema,
-    v4
+    v4,
   );
 
   const authMongoStrategy = new ContextStrategy(authMongoInstance);

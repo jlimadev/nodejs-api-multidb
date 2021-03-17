@@ -1,7 +1,7 @@
-const Sequelize = require("sequelize");
+const Sequelize = require('sequelize');
 
 const usersSchema = {
-  name: "users",
+  name: 'users',
   schema: {
     id: {
       type: Sequelize.UUID,
@@ -20,7 +20,7 @@ const usersSchema = {
     },
   },
   options: {
-    tableName: "TB_USERS",
+    tableName: 'TB_USERS',
     freezeTableName: false,
     timestamps: false,
   },

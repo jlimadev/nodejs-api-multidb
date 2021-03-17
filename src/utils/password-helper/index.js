@@ -1,5 +1,5 @@
-const { hash, compare } = require("bcrypt");
-const { promisify } = require("util");
+const { hash, compare } = require('bcrypt');
+const { promisify } = require('util');
 
 const asyncHash = promisify(hash);
 const asyncCompare = promisify(compare);

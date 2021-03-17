@@ -12,14 +12,14 @@ class HeroRoutesController {
       const dbResponse = await this.db.read(
         search,
         parseInt(skip, 10),
-        parseInt(limit, 10)
+        parseInt(limit, 10),
       );
 
       if (dbResponse.length === 0) {
         const error = {
           statusCode: 404,
-          error: "Not Found",
-          message: "Hero not found",
+          error: 'Not Found',
+          message: 'Hero not found',
         };
         return response.status(error.statusCode).json(error);
       }
