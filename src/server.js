@@ -5,8 +5,8 @@ defineEnvironment(env);
 
 const { app } = require('.');
 
-const port = process.env.PORT;
-const url = process.env.URL;
+const port = process.env.PORT || 4000;
+const url = process.env.URL || 'http://localhost';
 
 app.listen(port, () => {
   console.log(`Express server is running on ${url}:${port}`);
