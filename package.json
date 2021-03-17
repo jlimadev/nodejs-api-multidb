@@ -4,7 +4,7 @@
   "main": "src/server.js",
   "license": "MIT",
   "scripts": {
-    "test": "jest --config jest.config.js",
+    "test": "cross-env NODE_ENV=devl jest --config jest.config.js",
     "test:prod": "cross-env NODE_ENV=prod jest --config jest.config.js",
     "start": "cross-env NODE_ENV=prod node src/server.js",
     "start:dev": "cross-env NODE_ENV=devl nodemon src/server.js",
