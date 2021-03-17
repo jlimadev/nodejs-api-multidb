@@ -124,62 +124,61 @@ describe('AuthRoutesController test suit', () => {
         expect(mockedResponse.json).toHaveBeenCalledWith(createdUser);
         expect(mockedResponse.status).toHaveBeenCalledWith(200);
       });
+    });
+    describe('Failure Cases', () => {
+      it('Should return 409 Status [Conflict] if try to register an user that already exists', async () => {
+        const {
+          Sut,
+          deps,
+          mockedRequest,
+          mockedResponse,
+          successResponse,
+          hashedDefaultUser,
+        } = makeSut();
 
-      describe('Failure Cases', () => {
-        it('Should return 409 Status [Conflict] if try to register an user that already exists', async () => {
-          const {
-            Sut,
-            deps,
-            mockedRequest,
-            mockedResponse,
-            successResponse,
-            hashedDefaultUser,
-          } = makeSut();
+        deps.db.read = jest.fn().mockResolvedValue([hashedDefaultUser]);
 
-          deps.db.read = jest.fn().mockResolvedValue([hashedDefaultUser]);
+        const authRoutesController = new Sut(deps);
+        const response = await authRoutesController.signUp(
+          mockedRequest,
+          mockedResponse,
+        );
 
-          const authRoutesController = new Sut(deps);
-          const response = await authRoutesController.signUp(
-            mockedRequest,
-            mockedResponse,
-          );
+        const errorMessage = {
+          statusCode: 409,
+          error: 'Conflict',
+          message: 'This user already exists',
+        };
 
-          const errorMessage = {
-            statusCode: 409,
-            error: 'Conflict',
-            message: 'This user already exists',
-          };
+        expect(response).toStrictEqual(successResponse);
+        expect(mockedResponse.json).toHaveBeenCalledWith(errorMessage);
+        expect(mockedResponse.status).toHaveBeenCalledWith(409);
+      });
 
-          expect(response).toStrictEqual(successResponse);
-          expect(mockedResponse.json).toHaveBeenCalledWith(errorMessage);
-          expect(mockedResponse.status).toHaveBeenCalledWith(409);
+      it('Should return 500 Status [Internal Server Error] if an error occurs in the process', async () => {
+        const {
+          Sut,
+          deps,
+          mockedRequest,
+          errorMessage,
+          errorResponse,
+          mockedErrorResponse,
+        } = makeSut();
+
+        deps.db.read = jest.fn().mockRejectedValue(errorMessage);
+
+        const authRoutesController = new Sut(deps);
+
+        const response = await authRoutesController.signUp(
+          mockedRequest,
+          mockedErrorResponse,
+        );
+
+        expect(response).toStrictEqual(errorResponse);
+        expect(mockedErrorResponse.json).toHaveBeenCalledWith({
+          message: errorMessage.message,
         });
-
-        it('Should return 500 Status [Internal Server Error] if an error occurs in the process', async () => {
-          const {
-            Sut,
-            deps,
-            mockedRequest,
-            errorMessage,
-            errorResponse,
-            mockedErrorResponse,
-          } = makeSut();
-
-          deps.db.read = jest.fn().mockRejectedValue(errorMessage);
-
-          const authRoutesController = new Sut(deps);
-
-          const response = await authRoutesController.signUp(
-            mockedRequest,
-            mockedErrorResponse,
-          );
-
-          expect(response).toStrictEqual(errorResponse);
-          expect(mockedErrorResponse.json).toHaveBeenCalledWith({
-            message: errorMessage.message,
-          });
-          expect(mockedErrorResponse.status).toHaveBeenCalledWith(500);
-        });
+        expect(mockedErrorResponse.status).toHaveBeenCalledWith(500);
       });
     });
   });
@@ -211,95 +210,85 @@ describe('AuthRoutesController test suit', () => {
         expect(mockedResponse.json).toHaveBeenCalledWith(authResponse);
         expect(mockedResponse.status).toHaveBeenCalledWith(200);
       });
+    });
 
-      describe('Failure Cases', () => {
-        it('Should return 404 Status [Not Found] if sign in with username that does not exist', async () => {
-          const {
-            Sut,
-            deps,
-            mockedRequest,
-            mockedErrorResponse,
-            defaultUser,
-            notFoundResponse,
-          } = makeSut();
+    describe('Failure Cases', () => {
+      it('Should return 404 Status [Not Found] if sign in with username that does not exist', async () => {
+        const {
+          Sut,
+          deps,
+          mockedRequest,
+          mockedErrorResponse,
+          defaultUser,
+          notFoundResponse,
+        } = makeSut();
 
-          deps.db.read = jest.fn().mockResolvedValue([]);
-          mockedRequest.body = defaultUser;
-          mockedErrorResponse.json = jest
-            .fn()
-            .mockReturnValue(notFoundResponse);
+        deps.db.read = jest.fn().mockResolvedValue([]);
+        mockedRequest.body = defaultUser;
+        mockedErrorResponse.json = jest.fn().mockReturnValue(notFoundResponse);
 
-          const authRoutesController = new Sut(deps);
-          const response = await authRoutesController.signIn(
-            mockedRequest,
-            mockedErrorResponse,
-          );
+        const authRoutesController = new Sut(deps);
+        const response = await authRoutesController.signIn(
+          mockedRequest,
+          mockedErrorResponse,
+        );
 
-          expect(response).toStrictEqual(notFoundResponse);
-          expect(mockedErrorResponse.json).toHaveBeenCalledWith(
-            notFoundResponse,
-          );
-          expect(mockedErrorResponse.status).toHaveBeenCalledWith(404);
-        });
+        expect(response).toStrictEqual(notFoundResponse);
+        expect(mockedErrorResponse.json).toHaveBeenCalledWith(notFoundResponse);
+        expect(mockedErrorResponse.status).toHaveBeenCalledWith(404);
+      });
 
-        it.only('Should return 404 Status [Not Found] if sign in with invalid password', async () => {
-          const {
-            Sut,
-            deps,
-            mockedRequest,
-            mockedErrorResponse,
-            defaultUser,
-            hashedDefaultUser,
-            notFoundResponse,
-          } = makeSut();
+      it('Should return 404 Status [Not Found] if sign in with invalid password', async () => {
+        const {
+          Sut,
+          deps,
+          mockedRequest,
+          mockedErrorResponse,
+          defaultUser,
+          hashedDefaultUser,
+          notFoundResponse,
+        } = makeSut();
 
-          deps.db.read = jest.fn().mockResolvedValue([hashedDefaultUser]);
-          deps.passwordHelper.comparePassword = jest
-            .fn()
-            .mockReturnValue(false);
-          mockedRequest.body = defaultUser;
-          mockedErrorResponse.json = jest
-            .fn()
-            .mockReturnValue(notFoundResponse);
+        deps.db.read = jest.fn().mockResolvedValue([hashedDefaultUser]);
+        deps.passwordHelper.comparePassword = jest.fn().mockReturnValue(false);
+        mockedRequest.body = defaultUser;
+        mockedErrorResponse.json = jest.fn().mockReturnValue(notFoundResponse);
 
-          const authRoutesController = new Sut(deps);
-          const response = await authRoutesController.signIn(
-            mockedRequest,
-            mockedErrorResponse,
-          );
+        const authRoutesController = new Sut(deps);
+        const response = await authRoutesController.signIn(
+          mockedRequest,
+          mockedErrorResponse,
+        );
 
-          expect(response).toStrictEqual(notFoundResponse);
-          expect(mockedErrorResponse.json).toHaveBeenCalledWith(
-            notFoundResponse,
-          );
-          expect(mockedErrorResponse.status).toHaveBeenCalledWith(404);
-        });
+        expect(response).toStrictEqual(notFoundResponse);
+        expect(mockedErrorResponse.json).toHaveBeenCalledWith(notFoundResponse);
+        expect(mockedErrorResponse.status).toHaveBeenCalledWith(404);
+      });
 
-        it('Should return 500 Status [Internal Server Error] if an error occurs in the process', async () => {
-          const {
-            Sut,
-            deps,
-            mockedRequest,
-            errorMessage,
-            errorResponse,
-            mockedErrorResponse,
-          } = makeSut();
+      it('Should return 500 Status [Internal Server Error] if an error occurs in the process', async () => {
+        const {
+          Sut,
+          deps,
+          mockedRequest,
+          errorMessage,
+          errorResponse,
+          mockedErrorResponse,
+        } = makeSut();
 
-          deps.db.read = jest.fn().mockRejectedValue(errorMessage);
+        deps.db.read = jest.fn().mockRejectedValue(errorMessage);
 
-          const authRoutesController = new Sut(deps);
+        const authRoutesController = new Sut(deps);
 
-          const response = await authRoutesController.signIn(
-            mockedRequest,
-            mockedErrorResponse,
-          );
+        const response = await authRoutesController.signIn(
+          mockedRequest,
+          mockedErrorResponse,
+        );
 
-          expect(response).toStrictEqual(errorResponse);
-          expect(mockedErrorResponse.json).toHaveBeenCalledWith(
-            errorMessage.message,
-          );
-          expect(mockedErrorResponse.status).toHaveBeenCalledWith(500);
-        });
+        expect(response).toStrictEqual(errorResponse);
+        expect(mockedErrorResponse.json).toHaveBeenCalledWith(
+          errorMessage.message,
+        );
+        expect(mockedErrorResponse.status).toHaveBeenCalledWith(500);
       });
     });
   });
