@@ -24,7 +24,6 @@ const swaggerOptions = {
       title: 'Heroes API',
       description: 'CRUD application to heroes',
     },
-    servers: [{ url: 'http://localhost:4000' }],
   },
   apis: ['src/routes/specs/openapi.yaml'],
 };
