@@ -292,4 +292,27 @@ describe('AuthRoutesController test suit', () => {
       });
     });
   });
+
+  describe('SignOut test Suit', () => {
+    it('Should signout', async () => {
+      const { Sut, deps, mockedRequest, mockedResponse } = makeSut();
+
+      const authResponse = {
+        auth: false,
+        token: null,
+      };
+
+      mockedResponse.json = jest.fn().mockReturnValue(authResponse);
+
+      const authRoutesController = new Sut(deps);
+      const response = await authRoutesController.signOut(
+        mockedRequest,
+        mockedResponse,
+      );
+
+      expect(response).toStrictEqual(authResponse);
+      expect(mockedResponse.json).toHaveBeenCalledWith(authResponse);
+      expect(mockedResponse.status).toHaveBeenCalledWith(200);
+    });
+  });
 });
