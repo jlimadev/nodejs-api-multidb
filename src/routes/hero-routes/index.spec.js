@@ -331,7 +331,10 @@ describe('heroRoutes test suit', () => {
             .send(patchObject)
             .set('Authorization', `Bearer ${mockedToken}`);
 
-          expect(response.body).toStrictEqual(expectedResponse);
+          const { n, nModified, ok } = response.body;
+          const responseBodyContaining = { n, nModified, ok };
+
+          expect(responseBodyContaining).toStrictEqual(expectedResponse);
         });
       });
 
@@ -432,7 +435,10 @@ describe('heroRoutes test suit', () => {
             .delete(`/heroes/${testId}`)
             .set('Authorization', `Bearer ${mockedToken}`);
 
-          expect(response.body).toStrictEqual(expectedResponse);
+          const { n, deletedCount, ok } = response.body;
+          const responseBodyContaining = { n, deletedCount, ok };
+
+          expect(responseBodyContaining).toStrictEqual(expectedResponse);
         });
 
         it('Should delete all when id is not specified', async () => {
@@ -454,7 +460,11 @@ describe('heroRoutes test suit', () => {
           const response = await request(app)
             .delete('/heroes')
             .set('Authorization', `Bearer ${mockedToken}`);
-          expect(response.body).toStrictEqual(expectedResponse);
+
+          const { n, deletedCount, ok } = response.body;
+          const responseBodyContaining = { n, deletedCount, ok };
+
+          expect(responseBodyContaining).toStrictEqual(expectedResponse);
         });
       });
 
