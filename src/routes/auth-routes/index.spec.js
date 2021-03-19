@@ -100,5 +100,18 @@ describe('heroRoutes test suit', () => {
       expect(response.body.username).toBe(userToSignUp.username);
       expect(response.status).toBe(200);
     });
+
+    it('Should return Status 409 - [Conflict] when register an existing user', async () => {
+      const { userToSignUp } = makeSut();
+
+      const response = await request(app)
+        .post('/auth/signup')
+        .send(userToSignUp);
+
+      const { statusCode, error, message } = response.body;
+      expect(statusCode).toBe(409);
+      expect(error).toBe('Conflict');
+      expect(message).toBe('This user already exists');
+    });
   });
 });
