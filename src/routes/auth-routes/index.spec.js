@@ -49,6 +49,9 @@ const makeSut = () => {
 };
 
 describe('heroRoutes test suit', () => {
+  beforeAll(async () => {
+    await mongoConnection.collection('auths').deleteMany({});
+  });
   afterAll(async () => {
     await mongoConnection.close();
   });
@@ -114,7 +117,7 @@ describe('heroRoutes test suit', () => {
       expect(message).toBe('This user already exists');
     });
 
-    it.only('Should return Status 400 - [Bad Request] when register an user missing infos', async () => {
+    it('Should return Status 400 - [Bad Request] when register an user missing infos', async () => {
       const { defaultUser } = makeSut();
 
       const response = await request(app)
