@@ -113,5 +113,20 @@ describe('heroRoutes test suit', () => {
       expect(error).toBe('Conflict');
       expect(message).toBe('This user already exists');
     });
+
+    it.only('Should return Status 400 - [Bad Request] when register an user missing infos', async () => {
+      const { defaultUser } = makeSut();
+
+      const response = await request(app)
+        .post('/auth/signup')
+        .send(defaultUser);
+
+      const { statusCode, error, validation } = response.body;
+      expect(statusCode).toBe(400);
+      expect(error).toBe('Bad Request');
+      expect(validation.body.message).toBe(
+        '"passwordConfirmation" is required',
+      );
+    });
   });
 });
