@@ -145,5 +145,20 @@ describe('AUTH ROUTES TEST SUIT', () => {
       expect(response.body.auth).toBe(true);
       expect(response.body.token).toBeTruthy();
     });
+
+    it('Should return Status 404 - [Not Found] when signin with an unexisting user', async () => {
+      const unexistingUser = {
+        username: 'anyUnexisting',
+        password: 'anyUnexisting',
+      };
+      const response = await request(app)
+        .post('/auth/signin')
+        .send(unexistingUser);
+
+      const { statusCode, error, message } = response.body;
+      expect(statusCode).toBe(404);
+      expect(error).toBe('Not Found');
+      expect(message).toBe('Invalid username or password');
+    });
   });
 });
