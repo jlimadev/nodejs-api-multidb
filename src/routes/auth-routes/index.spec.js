@@ -160,5 +160,18 @@ describe('AUTH ROUTES TEST SUIT', () => {
       expect(error).toBe('Not Found');
       expect(message).toBe('Invalid username or password');
     });
+
+    it('Should return Status 400 - [Bad Request] when login an user missing infos', async () => {
+      const { defaultUser } = makeSut();
+
+      const response = await request(app)
+        .post('/auth/signup')
+        .send({ username: defaultUser.username });
+
+      const { statusCode, error, validation } = response.body;
+      expect(statusCode).toBe(400);
+      expect(error).toBe('Bad Request');
+      expect(validation.body.message).toBe('"password" is required');
+    });
   });
 });
