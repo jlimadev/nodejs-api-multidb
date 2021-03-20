@@ -174,4 +174,14 @@ describe('AUTH ROUTES TEST SUIT', () => {
       expect(validation.body.message).toBe('"password" is required');
     });
   });
+
+  describe('test /auth/signout route', () => {
+    it('Should return Status 200 - [Success] when signout successfuly', async () => {
+      const response = await request(app).post('/auth/signout');
+
+      expect(response.status).toBe(200);
+      expect(response.body.auth).toBe(false);
+      expect(response.body.token).toBeFalsy();
+    });
+  });
 });
