@@ -48,10 +48,11 @@ const makeSut = () => {
   };
 };
 
-describe('heroRoutes test suit', () => {
+describe('AUTH ROUTES TEST SUIT', () => {
   beforeAll(async () => {
     await mongoConnection.collection('auths').deleteMany({});
   });
+
   afterAll(async () => {
     await mongoConnection.close();
   });
@@ -130,6 +131,19 @@ describe('heroRoutes test suit', () => {
       expect(validation.body.message).toBe(
         '"passwordConfirmation" is required',
       );
+    });
+  });
+
+  describe('test /auth/signin route', () => {
+    it('Should return Status 200 - [Success] when signin successfuly', async () => {
+      const { defaultUser } = makeSut();
+      const response = await request(app)
+        .post('/auth/signin')
+        .send(defaultUser);
+
+      expect(response.status).toBe(200);
+      expect(response.body.auth).toBe(true);
+      expect(response.body.token).toBeTruthy();
     });
   });
 });
