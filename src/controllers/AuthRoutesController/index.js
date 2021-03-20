@@ -33,6 +33,7 @@ class AuthRoutesController {
           id: user.id,
         },
         this.secret,
+        { expiresIn: '1h' },
       );
 
       const auth = { auth: true, token };
